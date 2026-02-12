@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\EventosController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -11,10 +11,12 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function (): void {
+    Route::get('dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
 
-Route::resource('eventos', EventosController::class);
+    Route::resource('users', UserController::class);
+});
 
 require __DIR__ . '/settings.php';
