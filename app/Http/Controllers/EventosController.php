@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\eventos;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Psy\Readline\Hoa\EventSource;
 
 class EventosController extends Controller
 {
@@ -14,8 +16,13 @@ class EventosController extends Controller
      */
     public function index()
     {
-        return Inertia::render('events/index', []);
+        $eventos = eventos::all();
+
+        return Inertia::render('events/index', [
+            'eventos' => $eventos,
+        ]);
     }
+    //resources/js/pages/events/index.vue
 
     /**
      * Show the form for creating a new resource.

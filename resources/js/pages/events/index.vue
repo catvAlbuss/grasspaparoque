@@ -1,49 +1,44 @@
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
-import UserController from '@/actions/App/Http/Controllers/UserController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { index as usersIndex } from '@/routes/users';
 import { type BreadcrumbItem } from '@/types';
+import EventosController from '@/actions/App/Http/Controllers/EventosController';
 
-type UserRow = {
+
+type eventos = {
     id: number;
-    name: string;
-    email: string;
-    personal: string | null;
-    role: string | null;
-    created_at: string | null;
+    nombre: string;
+    precio: string;
+    descripcion: string;
+    estado: number;
 };
 
 type Props = {
-    users: UserRow[];
-    roles: string[];
+    eventos: eventos[];
 };
 
 const props = defineProps<Props>();
-const users = computed(() => props.users);
-const roles = computed(() => props.roles);
+const eventos = computed(() => props.eventos);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Usuarios',
-        href: usersIndex().url,
+        title: 'eventos',
+        href: './eventos',
     },
 ];
 
 const editingId = ref<number | null>(null);
 
 const form = useForm({
-    name: '',
-    email: '',
-    personal: '',
-    role: props.roles[0] ?? '',
-    password: '',
-    password_confirmation: '',
+    nombre: '',
+    precio: '',
+    descripcion: '',
+    estado: 1,
 });
 
 const deleteForm = useForm({});
@@ -55,18 +50,15 @@ const resetForm = (): void => {
     editingId.value = null;
     form.reset();
     form.clearErrors();
-    form.role = props.roles[0] ?? '';
 };
 
-const startEdit = (user: UserRow): void => {
-    editingId.value = user.id;
+const startEdit = (events: eventos): void => {
+    editingId.value = events.id;
     form.clearErrors();
-    form.name = user.name;
-    form.email = user.email;
-    form.personal = user.personal ?? '';
-    form.role = user.role ?? props.roles[0] ?? '';
-    form.password = '';
-    form.password_confirmation = '';
+    form.nombre = events.nombre;
+    form.precio = events.precio;
+    form.descripcion = events.descripcion;
+    form.estado = events.estado;
 };
 
 const submit = (): void => {
@@ -76,19 +68,19 @@ const submit = (): void => {
     };
 
     if (isEditing.value && editingId.value !== null) {
-        form.put(UserController.update.url(editingId.value), options);
+        form.put(EventosController.update.url(editingId.value), options);
         return;
     }
 
-    form.post(UserController.store.url(), options);
+    form.post(EventosController.store.url(), options);
 };
 
-const remove = (user: UserRow): void => {
-    if (!confirm(`Eliminar usuario "${user.name}"?`)) {
+const remove = (events: eventos): void => {
+    if (!confirm(`Eliminar usuario "${events.nombre}"?`)) {
         return;
     }
 
-    deleteForm.delete(UserController.destroy.url(user.id), {
+    deleteForm.delete(EventosController.destroy.url(events.id), {
         preserveScroll: true,
     });
 };
@@ -96,7 +88,7 @@ const remove = (user: UserRow): void => {
 
 <template>
 
-    <Head title="Usuarios" />
+    <Head title="eventos" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
@@ -111,47 +103,36 @@ const remove = (user: UserRow): void => {
                 <form class="mt-4 grid gap-4 md:grid-cols-2" @submit.prevent="submit">
                     <div class="grid gap-2">
                         <Label for="name">Nombre</Label>
-                        <Input id="name" v-model="form.name" type="text" required />
-                        <InputError :message="form.errors.name" />
+                        <Input id="name" v-model="form.nombre" type="text" required />
+                        <InputError :message="form.errors.nombre" />
                     </div>
 
                     <div class="grid gap-2">
                         <Label for="email">Correo</Label>
-                        <Input id="email" v-model="form.email" type="email" required />
-                        <InputError :message="form.errors.email" />
+                        <Input id="email" v-model="form.precio" type="text" required />
+                        <InputError :message="form.errors.precio" />
                     </div>
 
                     <div class="grid gap-2">
                         <Label for="personal">Personal</Label>
-                        <Input id="personal" v-model="form.personal" type="text" />
-                        <InputError :message="form.errors.personal" />
+                        <Input id="personal" v-model="form.descripcion" type="text" />
+                        <InputError :message="form.errors.descripcion" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="role">Rol</Label>
-                        <select id="role" v-model="form.role" required
-                            class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50">
-                            <option v-for="role in roles" :key="role" :value="role">
-                                {{ role }}
-                            </option>
-                        </select>
-                        <InputError :message="form.errors.role" />
-                    </div>
-
-                    <div class="grid gap-2">
-                        <Label for="password">
-                            Password
+                        <Label for="estado">
+                            Estado
                             <span v-if="isEditing" class="text-xs text-muted-foreground">(opcional en edicion)</span>
                         </Label>
-                        <Input id="password" v-model="form.password" type="password" :required="!isEditing" />
-                        <InputError :message="form.errors.password" />
+                        <Input id="estado" v-model="form.estado" type="number" :required="!isEditing" />
+                        <InputError :message="form.errors.estado" />
                     </div>
 
-                    <div class="grid gap-2">
+                    <!-- <div class="grid gap-2">
                         <Label for="password_confirmation">Confirmar password</Label>
                         <Input id="password_confirmation" v-model="form.password_confirmation" type="password"
                             :required="!isEditing" />
-                    </div>
+                    </div> -->
 
                     <div class="col-span-full flex gap-2">
                         <Button type="submit" :disabled="form.processing || deleteForm.processing">
@@ -162,11 +143,12 @@ const remove = (user: UserRow): void => {
                             Cancelar
                         </Button>
                     </div>
+
                 </form>
             </section>
 
             <section class="rounded-xl border border-sidebar-border/70 bg-background p-4">
-                <h2 class="text-lg font-semibold">Listado de usuarios</h2>
+                <h2 class="text-lg font-semibold">Listado de eventos</h2>
 
                 <div class="mt-4 overflow-x-auto">
                     <table class="w-full min-w-[720px] text-sm">
@@ -174,13 +156,39 @@ const remove = (user: UserRow): void => {
                             <tr>
                                 <th class="px-2 py-2">ID</th>
                                 <th class="px-2 py-2">Nombre</th>
-                                <th class="px-2 py-2">Correo</th>
-                                <th class="px-2 py-2">Personal</th>
-                                <th class="px-2 py-2">Rol</th>
-                                <th class="px-2 py-2">Acciones</th>
+                                <th class="px-2 py-2">Precio</th>
+                                <th class="px-2 py-2">Descripcion</th>
+                                <th class="px-2 py-2">Estado</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <tr v-if="eventos.length === 0">
+                                <td colspan="6" class="px-2 py-4 text-center text-muted-foreground">
+                                    No hay usuarios registrados.
+                                </td>
+                            </tr>
+                            <tr v-for="events in eventos" :key="events.id" class="border-b">
+                                <td class="px-2 py-2">{{ events.id }}</td>
+                                <td class="px-2 py-2">{{ events.nombre }}</td>
+                                <td class="px-2 py-2">{{ events.precio }}</td>
+                                <td class="px-2 py-2">{{ events.descripcion ?? '-' }}</td>
+                                <td class="px-2 py-2">{{ events.estado ?? '-' }}</td>
+                                <td class="px-2 py-2">
+                                    <!-- <div class="flex gap-2">
+                                        <Button type="button" variant="secondary" size="sm"
+                                            :disabled="form.processing || deleteForm.processing"
+                                            @click="startEdit(user)">
+                                            Editar
+                                        </Button>
+                                        <Button type="button" variant="destructive" size="sm"
+                                            :disabled="form.processing || deleteForm.processing" @click="remove(user)">
+                                            Eliminar
+                                        </Button>
+                                    </div> -->
+                                </td>
+                            </tr>
+                        </tbody>
+                        <!-- <tbody>
                             <tr v-if="users.length === 0">
                                 <td colspan="6" class="px-2 py-4 text-center text-muted-foreground">
                                     No hay usuarios registrados.
@@ -206,11 +214,13 @@ const remove = (user: UserRow): void => {
                                     </div>
                                 </td>
                             </tr>
-                        </tbody>
+                        </tbody> -->
+
                     </table>
                 </div>
                 <InputError :message="deleteError" class="mt-3" />
             </section>
+
         </div>
     </AppLayout>
 </template>

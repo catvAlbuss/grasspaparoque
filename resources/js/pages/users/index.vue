@@ -2,6 +2,7 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import UserController from '@/actions/App/Http/Controllers/UserController';
+import EventosController from '@/actions/App/Http/Controllers/EventosController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -211,6 +212,7 @@ const remove = (user: UserRow): void => {
                 </div>
                 <InputError :message="deleteError" class="mt-3" />
             </section>
+            
         </div>
     </AppLayout>
 </template>

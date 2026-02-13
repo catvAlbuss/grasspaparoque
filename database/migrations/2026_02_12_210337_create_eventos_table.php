@@ -12,7 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('eventos', function (Blueprint $table) {
-            $table->id();
+            $table->id(null);
+            $table->string('nombre');
+            $table->decimal('precio', 10,2);
+            $table->text('descripcion');
+            $table->tinyInteger('estado');
             $table->timestamps();
         });
     }

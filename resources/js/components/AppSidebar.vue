@@ -4,18 +4,12 @@ import { BookOpen, Folder, LayoutGrid, Users2 } from 'lucide-vue-next';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import AppLogo from './AppLogo.vue';
 import { dashboard } from '@/routes';
+import eventos from '@/routes/eventos';
+import users from '@/routes/users';
 
 const mainNavItems: NavItem[] = [
     {
@@ -25,12 +19,12 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Usuarios',
-        href: './users',
+        href: users.index.url(),
         icon: Users2,
     },
     {
         title: 'eventos',
-        href: '#',
+        href: eventos.index.url(),
         icon: LayoutGrid,
     },
 ];
