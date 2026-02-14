@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class eventos extends Model
+class Eventos extends Model
 {
     protected $fillable = [
-        // 'id',
+        // 'ideventos',
         'nombre',
         'precio',
         'descripcion',

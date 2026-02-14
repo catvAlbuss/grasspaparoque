@@ -66,7 +66,7 @@ const submit = (): void => {
         preserveScroll: true,
         onSuccess: () => resetForm(),
     };
-
+    console.log(editingId.value);
     if (isEditing.value && editingId.value !== null) {
         form.put(EventosController.update.url(editingId.value), options);
         return;
@@ -108,13 +108,13 @@ const remove = (events: eventos): void => {
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="email">Correo</Label>
-                        <Input id="email" v-model="form.precio" type="text" required />
+                        <Label for="">Precio</Label>
+                        <Input id="" v-model="form.precio" type="text" required />
                         <InputError :message="form.errors.precio" />
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="personal">Personal</Label>
+                        <Label for="personal">Descripcion</Label>
                         <Input id="personal" v-model="form.descripcion" type="text" />
                         <InputError :message="form.errors.descripcion" />
                     </div>
@@ -174,17 +174,17 @@ const remove = (events: eventos): void => {
                                 <td class="px-2 py-2">{{ events.descripcion ?? '-' }}</td>
                                 <td class="px-2 py-2">{{ events.estado ?? '-' }}</td>
                                 <td class="px-2 py-2">
-                                    <!-- <div class="flex gap-2">
+                                    <div class="flex gap-2">
                                         <Button type="button" variant="secondary" size="sm"
                                             :disabled="form.processing || deleteForm.processing"
-                                            @click="startEdit(user)">
+                                            @click="startEdit(events)">
                                             Editar
                                         </Button>
                                         <Button type="button" variant="destructive" size="sm"
-                                            :disabled="form.processing || deleteForm.processing" @click="remove(user)">
+                                            :disabled="form.processing || deleteForm.processing" @click="remove(events)">
                                             Eliminar
                                         </Button>
-                                    </div> -->
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>

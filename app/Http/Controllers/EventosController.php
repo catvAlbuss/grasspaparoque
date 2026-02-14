@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\eventos;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Container\Attributes\Log;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Psy\Readline\Hoa\EventSource;
@@ -12,7 +13,7 @@ use Psy\Readline\Hoa\EventSource;
 class EventosController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource. 
      */
     public function index()
     {
@@ -29,7 +30,7 @@ class EventosController extends Controller
      */
     public function create()
     {
-        //
+        return to_route('events.index');
     }
 
     /**
@@ -37,7 +38,23 @@ class EventosController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validate = $request -> validate([
+            'nombre'=> ['required', 'string', 'max:250'],
+            'precio'=> ['required', 'numeric','min:0'],
+            'descripcion'=> ['required', 'string', 'max:1000'],
+            'estado'=>['required','boolean'],
+        ]);   
+
+        $events = Eventos::create([
+            'nombre'=>$validate['nombre'],
+            'precio'=>$validate['precio'],
+            'descripcion'=>$validate['descripcion'] ?? null,
+            'estado'=>$validate['estado'],
+        ]);
+
+        // $events->syncRoles([$validate['role']]);
+
+        // return to_route('events.index');
     }
 
     /**
@@ -45,7 +62,7 @@ class EventosController extends Controller
      */
     public function show(eventos $eventos)
     {
-        //
+        return to_route('events.index');
     }
 
     /**
@@ -53,22 +70,55 @@ class EventosController extends Controller
      */
     public function edit(eventos $eventos)
     {
-        //
+        return to_route('events.index');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, eventos $eventos)
+    public function update(Request $request, string $eventosId)
     {
-        //
+        $events = Eventos::query()->findOrFail($eventosId);
+
+        $validate = $request->validate([
+            'nombre'=> ['required', 'string', 'max:250'],
+            'precio'=> ['required', 'numeric','min:0'],
+            'descripcion'=> ['required', 'string', 'max:1000'],
+            'estado'=>['required','boolean'],
+        ]);
+
+        $payload = [
+            'nombre' => $validate['nombre'],
+            'precio' => $validate['precio'],
+            'descripcion'=> $validate['descripcion'],
+            'estado' => $validate['estado'],
+        ];
+        
+        Log:info($payload);
+        // if (! empty($validated['password'])) {
+        //     $payload['password'] = $validated['password'];
+        // }
+        $events->update($payload);
+        // $events->syncRoles([$validated['role']]);
+
+        return to_route('eventos.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(eventos $eventos)
+    public function destroy(Eventos $request, string $eventosId)
     {
-        //
+        $events = Eventos::query()->findOrFail($eventosId);
+
+        // if ($request->events()?->id === $events->id) {
+        //     return back()->withErrors([
+        //         'delete' => 'No puedes eliminar tu propio usuario.',
+        //     ]);
+        // }
+
+        $events->delete();
+
+        // return to_route('events.index');
     }
 }
