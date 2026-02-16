@@ -110,10 +110,12 @@ class UserController extends Controller
             'personal' => $validated['personal'] ?? null,
         ];
 
+        //Si noesta vacio el password entra en la condicion
         if (! empty($validated['password'])) {
             $payload['password'] = $validated['password'];
         }
 
+        //actualiza en la variable de user los nuevos datos de payload
         $user->update($payload);
         $user->syncRoles([$validated['role']]);
 

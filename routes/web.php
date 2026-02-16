@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EventosController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -19,6 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
     Route::resource('users', UserController::class);
     Route::resource('eventos', EventosController::class);
+    Route::resource('products', ProductsController::class);
 
 });
 

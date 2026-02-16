@@ -15,6 +15,7 @@ return new class extends Migration
             $prod->id();
             $prod -> string('name');
             $prod -> text('description');
+            $prod -> integer('stock');
             $prod -> decimal('price_unit', 10,2);
             $prod -> decimal('price_higher', 10,2);
             $prod -> date('expiration_date');

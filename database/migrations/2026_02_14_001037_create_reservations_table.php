@@ -16,13 +16,13 @@ return new class extends Migration
 
             $table->foreignId('id_evento')->constrained('eventos')->ondDelete('cascade');
             $table->foreignId('id_user')->constrained('users')->ondDelete('cascade');
-            $table->foreignId('id_pay')->constrained('pay')->ondDelete('cascade');
-
-            $table->decimal('amount');
-            $table->enum('payment_status', ['paid', 'pending', 'annulled'])->default('annulled');
-            $table->enum('payment_method', ['card', 'yape', 'plin', 'cash'])->default('cash');
-            $table->timestamp('payment_date');
-
+            $table->foreignId('id_pay')->constrained('pays')->ondDelete('cascade');
+            $table->foreignId('id_customer')->constrained('customers')->cascadeOnDelete();
+            //$table->foreignId('id_client')->constrained('client')->ondDelete('cascade');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->date('date');
+            $table->enum('reservation_status', ['free', 'busy'])->default('free');
             $table->timestamps();
         });
     }

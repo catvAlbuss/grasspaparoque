@@ -39,6 +39,7 @@ class ProductsController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:255'],
+            'stock' => ['required','string', 'max:255'],
             'price_unit' => ['required', 'string'],
             'price_higher' => ['required', 'string'],
             'expiration_date' => ['required', 'string'],
@@ -47,6 +48,7 @@ class ProductsController extends Controller
         $products = Products::create([
             'name' => $validated['name'],
             'description'=>$validated['description'],
+            'stock' => $validated['stock'],
             'price_unit' => $validated['price_unit'],
             'price_higher' => $validated['price_higher'],
             'expiration_date' => $validated['expiration_date'],
@@ -73,6 +75,7 @@ class ProductsController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * Actualizar Datos
      */
     public function update(Request $request, string $products_id)
     {
@@ -82,6 +85,7 @@ class ProductsController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:255'],
+            'stock' => ['required','string', 'max:255'],
             'price_unit' => ['required', 'string'],
             'price_higher' => ['required', 'string'],
             'expiration_date' => ['required', 'string'],
@@ -91,6 +95,7 @@ class ProductsController extends Controller
 
             'name' => $validated['name'],
             'description' => $validated['description'],
+            'stock' => $validated['stock'],
             'price_unit' => $validated['price_unit'],
             'price_higher' => $validated['price_higher'],
             'expiration_date' => $validated['expiration_date']
@@ -102,6 +107,7 @@ class ProductsController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * Eliminar un producto
      */
     public function destroy(Request $req, string $products_id)
     {

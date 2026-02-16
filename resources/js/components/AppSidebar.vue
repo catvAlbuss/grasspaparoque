@@ -10,6 +10,7 @@ import AppLogo from './AppLogo.vue';
 import { dashboard } from '@/routes';
 import eventos from '@/routes/eventos';
 import users from '@/routes/users';
+import products from '@/routes/products';
 
 const mainNavItems: NavItem[] = [
     {
@@ -25,6 +26,11 @@ const mainNavItems: NavItem[] = [
     {
         title: 'eventos',
         href: eventos.index.url(),
+        icon: LayoutGrid,
+    },
+    {
+        title: 'productos',
+        href: products.index.url(),
         icon: LayoutGrid,
     },
 ];

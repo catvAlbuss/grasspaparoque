@@ -1,14 +1,25 @@
 ﻿<script setup>
 import { ref } from 'vue'
-
+import { Head, Link } from '@inertiajs/vue3';
+import { dashboard, login, register } from '@/routes';
+// withDefaults(
+//     defineProps<{
+//         canRegister: boolean;
+//     }>(),
+//     {
+//         canRegister: true,
+//     },
+// );
 const menuOpen = ref(false)
 
 const links = [
   { label: 'Inicio', to: { path: '/', hash: '#home' } },
   { label: 'Servicios', to: { path: '/', hash: '#services' } },
   { label: 'Contacto', to: { path: '/', hash: '#contact' } },
-  { label: 'Dashboard', to: { path: '/dashboard' } },
+  // { label: 'Dashboard', to: { path: '/dashboard' } },
 ]
+
+
 </script>
 
 <template>
@@ -25,10 +36,20 @@ const links = [
         </RouterLink>
       </div>
 
-      <RouterLink to="/login"
-        class="hidden rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 md:inline-flex">
-        Login
-      </RouterLink>
+      <Link v-if="$page.props.auth.user" :href="dashboard()"
+        class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal hover:bg-black dark:text-black dark:hover:text-white hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]">
+      Dashboard
+      </Link>
+      <template v-else>
+        <Link :href="login()"
+          class="inline-block rounded-sm border border-black px-5 py-1.5 text-sm leading-normal hover:bg-black dark:text-black dark:hover:text-white dark:hover:border-[#3E3E3A]">
+        Log in
+        </Link>
+        <!-- <Link v-if="canRegister" :href="register()"
+          class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]">
+        Register
+        </Link> -->
+      </template>
 
       <button type="button"
         class="inline-flex items-center justify-center rounded-lg border border-slate-200 p-2 text-slate-700 transition hover:bg-slate-100 md:hidden"
@@ -55,11 +76,20 @@ const links = [
             class="text-sm font-medium text-slate-700 transition hover:text-slate-900" @click="menuOpen = false">
             {{ link.label }}
           </RouterLink>
-          <RouterLink to="/login"
-            class="rounded-full bg-slate-900 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-slate-800"
-            @click="menuOpen = false">
-            Login
-          </RouterLink>
+          <Link v-if="$page.props.auth.user" :href="dashboard()"
+            class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]">
+          Dashboard
+          </Link>
+          <template v-else>
+            <Link :href="login()"
+              class="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]">
+            Log in
+            </Link>
+            <!-- <Link v-if="canRegister" :href="register()"
+              class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]">
+            Register
+            </Link> -->
+          </template>
         </div>
       </div>
     </div>

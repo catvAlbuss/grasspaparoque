@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pay', function (Blueprint $table) {
+        Schema::create('pays', function (Blueprint $table) {
             $table->id();
 
-            $table->date('date');
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->foreignId('id_products')->constrained('products')->ondDelete('cascade');
+            //$table->foreignId('id_reservations')->constrained('reservations')->ondDelete('cascade');
+            $table->decimal('amount');
             $table->enum('payment_status', ['paid', 'pending', 'annulled'])->default('annulled');
+            $table->enum('payment_method', ['card', 'yape', 'plin', 'cash'])->default('cash');
+            $table->timestamp('payment_date');
 
             $table->timestamps();
         });
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pago');
+        Schema::dropIfExists('pays');
     }
 };

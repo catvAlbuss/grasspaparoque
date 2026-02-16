@@ -15,6 +15,7 @@ type Products = {
     id: number;
     name: string;
     description: string;
+    stock: string;
     price_unit: string;
     price_higher: string;
     expiration_date: string;
@@ -39,6 +40,7 @@ const editingId = ref<number | null>(null);
 const form = useForm({
     name: '',
     description: '',
+    stock:'',
     price_unit: '',
     price_higher:'',
     expiration_date:''
@@ -61,6 +63,7 @@ const startEdit = (products: Products): void => {
     form.clearErrors();
     form.name = products.name;
     form.description = products.description;
+    form.stock = products.stock;
     form.price_unit = products.price_unit;
     form.price_higher = products.price_higher;
     form.expiration_date = products.expiration_date;
@@ -102,7 +105,7 @@ const remove = (products: Products): void => {
         <div class="space-y-6 p-4">
             <section class="rounded-xl border border-sidebar-border/70 bg-background p-4">
                 <h1 class="text-xl font-semibold">
-                    {{ isEditing ? 'Editar usuario' : 'Nuevo usuario' }}
+                    {{ isEditing ? 'Editar producto' : 'Nuevo producto' }}
                 </h1>
                 <p class="mt-1 text-sm text-muted-foreground">
                     Gestiona los productos desde esta ventana.
@@ -119,6 +122,11 @@ const remove = (products: Products): void => {
                         <Label for="email">Descripcion</Label>
                         <Input id="email" v-model="form.description" type="text" required />
                         <InputError :message="form.errors.description" />
+                    </div>
+                    <div class="grid gap-2">
+                        <Label for="email">Stock</Label>
+                        <Input id="email" v-model="form.stock" type="text" required />
+                        <InputError :message="form.errors.stock" />
                     </div>
 
                     <div class="grid gap-2">
@@ -175,6 +183,7 @@ const remove = (products: Products): void => {
                                 <th class="px-2 py-2">ID</th>
                                 <th class="px-2 py-2">Nombre</th>
                                 <th class="px-2 py-2">Descripcion</th>
+                                <th class="px-2 py-2">Stock</th>
                                 <th class="px-2 py-2">Precio unitario</th>
                                 <th class="px-2 py-2">Precio al mayor</th>
                                 <th class="px-2 py-2">Fecha Vencimiento</th>
@@ -190,6 +199,7 @@ const remove = (products: Products): void => {
                                 <td class="px-2 py-2">{{ producto.id }}</td>
                                 <td class="px-2 py-2">{{ producto.name }}</td>
                                 <td class="px-2 py-2">{{ producto.description }}</td>
+                                <td class="px-2 py-2">{{ producto.stock }}</td>
                                 <td class="px-2 py-2">{{ producto.price_unit }}</td>
                                 <td class="px-2 py-2">{{ producto.price_higher }}</td>
                                 <td class="px-2 py-2">
