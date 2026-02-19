@@ -5,10 +5,7 @@ use App\Http\Controllers\EventosController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\ReservationController;
-<<<<<<< HEAD
 use App\Models\Eventos;
-=======
->>>>>>> c414cb0e794aa2d1bd2e86c92ac0b4c71923a84e
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -20,9 +17,6 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-<<<<<<< HEAD
-
-=======
 //RUTAS DE CALENDARIO PUBLICO   
 Route::get('/reservations/busy', [ReservationController::class, 'getReservasOcupadas'])->name('reservations.busy');
 Route::get('/events/type_events', [ReservationController::class, 'getTypeEvents'])->name('events.type_events');
@@ -31,7 +25,6 @@ Route::get('/events/type_events', [ReservationController::class, 'getTypeEvents'
 Route::post('/reservations/customers', [ReservationController::class, 'store'])->name('reservations.customers');
 
 //RUTAS QUE REQUIEREN AUTENTICACIÓN
->>>>>>> c414cb0e794aa2d1bd2e86c92ac0b4c71923a84e
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('dashboard', function () {
         return Inertia::render('Dashboard');
@@ -39,14 +32,12 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
     Route::resource('users', UserController::class);
     Route::resource('eventos', EventosController::class);
-<<<<<<< HEAD
     Route::resource('products', ProductsController::class);
     Route::resource('box', BoxController::class);
-=======
+
     
     Route::resource('reservations', ReservationController::class);
     // Route::post('/reservations', [ReservationController::class, 'create'])->name('reservations.create');
->>>>>>> c414cb0e794aa2d1bd2e86c92ac0b4c71923a84e
 });
 
 
