@@ -13,7 +13,9 @@ class Pay extends Model
         'payment_method',
         'payment_date',
     ];
-    public function products() {
-        return $this->belongsTo(Products::class,'id_products');
+
+    public function products()
+    {
+        return $this->belongsTo(Products::class, 'id_products');
     }
 }

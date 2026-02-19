@@ -1,7 +1,5 @@
 <script setup>
-
 //   npm install @schedule-x/vue @schedule-x/calendar @schedule-x/theme-default temporal-polyfill
-
 import { ScheduleXCalendar } from '@schedule-x/vue'
 import {
     createCalendar,
@@ -12,7 +10,13 @@ import {
 } from '@schedule-x/calendar'
 import '@schedule-x/theme-default/dist/index.css'
 import 'temporal-polyfill/global'
+import { createEventsServicePlugin } from '@schedule-x/events-service'
+import { onMounted } from 'vue'
 
+// CREAR EL PLUGIN PARA MANEJAR LOS EVENTOS EN EL CALENDARIO
+const eventsServicePlugin = createEventsServicePlugin()
+
+// CREAR LA INSTANCIA DEL CALENDARIO CON LAS VISTAS Y EL PLUGIN DE EVENTOS
 const calendarApp = createCalendar({
     selectedDate: Temporal.PlainDate.from('2026-02-07'),
     locale: 'es-ES',
@@ -22,34 +26,62 @@ const calendarApp = createCalendar({
         createViewMonthGrid(),
         createViewMonthAgenda(),
     ],
-    events: [
-        {
-            id: 1,
-            title: 'Futbol',
-            start: Temporal.ZonedDateTime.from('2026-02-05T08:00:00-05:00[America/Lima]'),
-            end: Temporal.ZonedDateTime.from('2026-02-05T09:00:00-05:00[America/Lima]'),
-        },
-        {
-            id: 2,
-            title: 'Evento 2',
-            start: Temporal.PlainDate.from('2026-02-07'),
-            end: Temporal.PlainDate.from('2026-02-08'),
-        },
-        {
-            id: 3,
-            title: 'Futbol',
-            start: Temporal.ZonedDateTime.from('2026-02-05T00:00:00-05:00[America/Lima]'),
-            end: Temporal.ZonedDateTime.from('2026-02-05T01:00:00-05:00[America/Lima]'),
-        },
-    ],
-})
+    events: [],
+},
+    [eventsServicePlugin])
 
+// AJUSTAR HORARIO
+const timeZone = 'UTC'
+
+const toZoned = (dateStr, timeStr) => {
+    const hhmmss = timeStr.length === 5 ? `${timeStr}:00` : timeStr
+    return Temporal.ZonedDateTime.from(`${dateStr}T${hhmmss}-00:00[${timeZone}]`)
+}
+
+// TRAER LAS RESERVAS OCUPADAS DESDE EL BACKEND
+onMounted(async () => {
+    try {
+        const response = await fetch('/reservations/busy', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const data = await response.json()
+
+        // data.forEach(r => {
+        //     console.log(`Reserva ID: ${r.id}, Fecha: ${r.date}, Hora Inicio: ${r.start_time}, Hora Fin: ${r.end_time}`)
+        // })
+
+        if (Array.isArray(data)) {
+            const eventos = data.map((r) => ({
+                id: r.id.toString(),
+                title: '🔴 OCUPADO',
+                start: toZoned(r.date, r.start_time),
+                end: toZoned(r.date, r.end_time),
+            }))
+
+            eventsServicePlugin.set(eventos)
+            console.log('Reservaciones:', eventos)
+        } else {
+            console.error('La respuesta no es un array:', data)
+        }
+    } catch (error) {
+        console.error('Error al cargar reservas:', error)
+    }
+})
 
 </script>
 
 <template>
     <section id="Calendario" class="mx-auto max-w-6xl px-4 py-6">
-        <div class="relative bg-gradient-to-r from-emerald-300 via-emerald-700 to-emerald-300 justify-center rounded-xl shadow-md">
+        <div
+            class="relative bg-gradient-to-r from-emerald-300 via-emerald-700 to-emerald-300 justify-center rounded-xl shadow-md">
 
             <!-- Calendario Title  -->
             <div class="text-center">

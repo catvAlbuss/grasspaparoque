@@ -13,14 +13,11 @@ return new class extends Migration
     {
         Schema::create('pays', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('id_products')->constrained('products')->ondDelete('cascade');
-            //$table->foreignId('id_reservations')->constrained('reservations')->ondDelete('cascade');
+            $table->foreignId('id_products')->constrained('products')->cascadeOnDelete();
             $table->decimal('amount');
             $table->enum('payment_status', ['paid', 'pending', 'annulled'])->default('annulled');
             $table->enum('payment_method', ['card', 'yape', 'plin', 'cash'])->default('cash');
-            $table->timestamp('payment_date');
-
+            $table->date('payment_date');
             $table->timestamps();
         });
     }
