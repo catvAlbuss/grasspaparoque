@@ -49,7 +49,7 @@ class ReservationController extends Controller
      */
     public function create()
     {
-       
+
 
         return to_route('reservations.index');
     }
@@ -103,6 +103,42 @@ class ReservationController extends Controller
         // //     ]);
         // // });
         // return response()->json($reservation);
+
+        // VALIDACION DE RESERVA DESDE EL INICIO
+        // $request->validate([
+        //     'name' => ['required', 'string', 'max:255'],
+        //     'lastname' => ['required', 'string', 'max:255'],
+        //     'email' => ['required', 'email', 'max:255'],
+        //     'phone' => ['required', 'string', 'max:20'],
+
+        //     'id_evento' => ['required', 'integer', Rule::exists('eventos', 'id')],
+        //     'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
+        //     'start_time' => ['required', 'date_format:H:i'],
+        //     'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+        // ]);
+
+        $customer = Customer::create([
+            'name' => $request->name,
+            'lastname' => $request->lastname,
+            'email' => $request->email,
+            'phone' => $request->phone,
+        ]);
+
+        $reservation = Reservation::create([
+            'id_evento' => $request->id_evento,
+            // 'id_user' => auth()->id(),
+            // 'id_pay' => null, // Aquí puedes asignar un valor predeterminado o manejarlo según tu lógica
+            'id_customer' => $customer->id,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'date' => $request->date,
+            'reservation_status' => 'busy', // O 'busy', dependiendo de tu lógica
+        ]);
+
+        return response()->json([
+            'message' => 'Reservación completada',
+            'data' => $reservation
+        ], 201);
     }
 
     /**
@@ -185,12 +221,11 @@ class ReservationController extends Controller
     // FUNCION DE MOSTRAR ESTADO:OCUPADO EN EL CALENDARIO
     public function getReservasOcupadas()
     {
-        $reservasOcupadas = Reservation::
-        where('reservation_status', 'busy')
-        ->select('id', 'date', 'start_time', 'end_time')
-        ->orderBy('date')
-        ->orderBy('start_time')
-        ->get();
+        $reservasOcupadas = Reservation::where('reservation_status', 'busy')
+            ->select('id', 'date', 'start_time', 'end_time')
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->get();
 
         $eventos = $reservasOcupadas->map(function ($reserva) {
             return [
@@ -200,21 +235,23 @@ class ReservationController extends Controller
                 'end_time' => $reserva->end_time,
             ];
         });
-        
-         return response()->json($eventos);
+
+        return response()->json($eventos);
     }
 
     // FUNCION PARA TRAER EL TIPO DE RESERVA
-    public function getTypeEvents(){
-        $type_events = Eventos::select('id', 'nombre')->get();
+    public function getTypeEvents()
+    {
+        $type_events = Eventos::select('id', 'nombre', 'precio')->get();
         return response()->json($type_events);
     }
 
     // CAPTURAR DATOS DE CLIENTE PARA RESERVA DESDE EL INICIO
-    public function postCustomers(Request $request){
+    public function postCustomers(Request $request)
+    {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'lastname'=>['required', 'string', 'max:255'],
+            'lastname' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
         ]);
@@ -224,6 +261,6 @@ class ReservationController extends Controller
             'message' => 'Cliente creado',
             'data' => $customer
         ], 201);
-         return response()->json($customer);
+        return response()->json($customer);
     }
 }

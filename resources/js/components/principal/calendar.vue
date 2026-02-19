@@ -13,9 +13,10 @@ import 'temporal-polyfill/global'
 import { createEventsServicePlugin } from '@schedule-x/events-service'
 import { onMounted } from 'vue'
 
+// CREAR EL PLUGIN PARA MANEJAR LOS EVENTOS EN EL CALENDARIO
 const eventsServicePlugin = createEventsServicePlugin()
 
-
+// CREAR LA INSTANCIA DEL CALENDARIO CON LAS VISTAS Y EL PLUGIN DE EVENTOS
 const calendarApp = createCalendar({
     selectedDate: Temporal.PlainDate.from('2026-02-07'),
     locale: 'es-ES',
@@ -37,6 +38,7 @@ const toZoned = (dateStr, timeStr) => {
     return Temporal.ZonedDateTime.from(`${dateStr}T${hhmmss}-00:00[${timeZone}]`)
 }
 
+// TRAER LAS RESERVAS OCUPADAS DESDE EL BACKEND
 onMounted(async () => {
     try {
         const response = await fetch('/reservations/busy', {

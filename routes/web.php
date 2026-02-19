@@ -20,7 +20,7 @@ Route::get('/reservations/busy', [ReservationController::class, 'getReservasOcup
 Route::get('/events/type_events', [ReservationController::class, 'getTypeEvents'])->name('events.type_events');
 
 //ENVIAR DATOS DEL FORMULARIO DE RESERVA DESDE EL INICIO
-Route::post('/reservations/customers', [ReservationController::class, 'postCustomers'])->name('reservations.customers');
+Route::post('/reservations/customers', [ReservationController::class, 'store'])->name('reservations.customers');
 
 //RUTAS QUE REQUIEREN AUTENTICACIÓN
 Route::middleware(['auth', 'verified'])->group(function (): void {

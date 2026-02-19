@@ -2,24 +2,27 @@
 import { ref, computed, onMounted } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 
-
+// DEFINIR EL TIPO DE EVENTO PARA LOS DATOS QUE SE TRAEN DESDE EL BACKEND
 type Evento = {
     id: number;
     nombre: string;
     precio: number;
 };
 
+// DEFINIR EL TIPO DE RESERVACIÓN PARA LOS DATOS QUE SE ENVIAN AL BACKEND
 type reservationData = {
-    nombre: string;
-    apellido: string;
-    correo: string;
-    numero: string;
+    name: string;
+    lastname: string;
+    email: string;
+    phone: string;
 
-    tipo: string | '';
-    fecha: string;
-    hora: string;
+    id_evento: string | '';
+    date: string;
+    start_time: string;
+    end_time: string;
 };
 
+// DEFINIR EL TIPO DE RESERVACIÓN PARA LOS DATOS QUE SE TRAEN DESDE EL BACKEND
 type Reservation = {
     id: number;
     id_evento: string;
@@ -29,9 +32,11 @@ type Reservation = {
     numero: string;
     tipo: string[];
     fecha: string;
-    hora: string;
+    hora_inicio: string;
+    hora_fin: string;
 };
 
+// DEFINIR LOS PROPS QUE SE RECIBEN DESDE EL PADRE
 type props = {
     reservations: Reservation[];
     eventos: Evento[];
@@ -40,7 +45,7 @@ type props = {
 const eventsServiceprecie = ref<Evento[]>([]);
 const props = defineProps<props>();
 
-
+// TRAER LOS TIPOS DE RESERVA DESDE EL BACKEND
 onMounted(async () => {
     try {
         const response = await fetch('/events/type_events', {
@@ -79,85 +84,81 @@ const reservations = computed(() => props.eventos);
 
 const isEditing = computed(() => !!reservations.value);
 
+// USAR USEFORM PARA MANEJAR LOS DATOS DEL FORMULARIO
 const formData = useForm<reservationData>({
-    nombre: '',
-    apellido: '',
-    correo: '',
-    numero: '',
-    tipo: '',
-    fecha: '',
-    hora: '',
+    name: '',
+    lastname: '',
+    email: '',
+    phone: '',
+    id_evento: '',
+    date: '',
+    start_time: '',
+    end_time: '',
 });
 
-const deleteForm = useForm({});
-const deleteError = computed(() => (deleteForm.errors as Record<string, string | undefined>).delete);
 const editingId = ref<number | null>(null);
 
-
+// FUNCION PARA RESETEAR EL FORMULARIO DESPUES DE ENVIARLO O ACTUALIZARLO
 const resetForm = (): void => {
     editingId.value = null;
     formData.reset();
     formData.clearErrors();
 };
 
-
+// PARA QUE VALIDE Y SALGA ERRORES EN EL FRONTEND, AUNQUE NO SE ENVÍE EL FORMULARIO
 const errores = ref({
-    nombre: '',
-    apellido: '',
-    correo: '',
-    numero: '',
-    tipo: '',
-    fecha: '',
-    hora: '',
+    name: '',
+    lastname: '',
+    email: '',
+    phone: '',
+    id_evento: '',
+    date: '',
+    start_time: '',
+    end_time: '',
 });
 
+// VALIDAR EL FORMULARIO ANTES DE ENVIARLO
 const validarFormulario = () => {
     errores.value = {
-        nombre: '',
-        apellido: '',
-        correo: '',
-        numero: '',
-        tipo: '',
-        fecha: '',
-        hora: '',
+        name: '',
+        lastname: '',
+        email: '',
+        phone: '',
+        id_evento: '',
+        date: '',
+        start_time: '',
+        end_time: '',
     };
 
-    if (!formData.nombre) errores.value.nombre = 'El nombre es obligatorio';
-    if (!formData.apellido) errores.value.apellido = 'El apellido es obligatorio';
-    if (!formData.correo) errores.value.correo = 'El correo es obligatorio';
-    if (!formData.numero) errores.value.numero = 'El número es obligatorio';
-    // if (!formData.tipo) errores.value.tipo = 'El tipo de evento es obligatorio';
-    if (!formData.fecha) errores.value.fecha = 'La fecha es obligatorio';
-    if (!formData.hora) errores.value.hora = 'La hora es obligatorio';
+    if (!formData.name) errores.value.name = 'El nombre es obligatorio';
+    if (!formData.lastname) errores.value.lastname = 'El apellido es obligatorio';
+    if (!formData.email) errores.value.email = 'El correo es obligatorio';
+    if (!formData.phone) errores.value.phone = 'El número es obligatorio';
+    if (!formData.id_evento) errores.value.id_evento = 'El tipo de evento es obligatorio';
+    if (!formData.date) errores.value.date = 'La fecha es obligatorio';
+    if (!formData.start_time) errores.value.start_time = 'La hora de inicio es obligatorio';
+    if (!formData.end_time) errores.value.end_time = 'La hora de fin es obligatorio';
 
     return Object.keys(errores.value).length === 0;
 }
 
-// const enviarFormulario = () => {
-//     if (validarFormulario()) {
-//         alert('Formulario válido, enviando...');
-//         console.log(formData);
-
-//     } else {
-//         alert('Por favor, corrija los errores.');
-//     }
-// };
-
-
+// ENVIAR DATOS DEL FORMULARIO AL BACKEND
 const submit = (): void => {
 
-    // if (!validarFormulario()) {
-    //     alert('Por favor, corrija los errores.');
-    //     return;
-    // }
+    if (!validarFormulario()) {
+        alert('Por favor, corrija los errores.');
+        return;
+    }
+    console.log('Datos del formulario:', formData);
 
-    formData.post('/reservations', {
+    formData.post('/reservations/customers', {
         onSuccess: () => {
             alert('Reservación creada con éxito');
             resetForm();
         },
         onError: () => alert('Error al crear la reservación'),
     });
+    
 };
 
 </script>
@@ -190,32 +191,32 @@ const submit = (): void => {
                         <div class="">
                             <!-- required="false" -->
                             <input type="text" placeholder="Nombre" class="px-3 py-3 border rounded-xl w-full"
-                                v-model="formData.nombre">
-                            <span class="text-red-500" v-if="errores.nombre">{{ errores.nombre }}</span>
+                                v-model="formData.name">
+                            <span class="text-red-500" v-if="errores.name">{{ errores.name }}</span>
                             <!-- <span v-if="touched.nombre && errors.nombre" class="text-red-500 text-sm">
                                 {{ errors.nombre }}
                             </span> -->
                         </div>
                         <div>
                             <input type="text" placeholder="Apellido" class="px-3 py-3 border rounded-xl w-full"
-                                v-model="formData.apellido">
-                            <span class="text-red-500" v-if="errores.apellido">{{ errores.apellido }}</span>
+                                v-model="formData.lastname">
+                            <span class="text-red-500" v-if="errores.lastname">{{ errores.lastname }}</span>
                         </div>
                     </div>
                     <!-- CORREO -->
                     <div>
                         <div class="">
                             <input type="email" placeholder="Correo" class="px-3 py-3 border rounded-xl w-full"
-                                v-model="formData.correo">
-                            <span class="text-red-500" v-if="errores.correo">{{ errores.correo }}</span>
+                                v-model="formData.email">
+                            <span class="text-red-500" v-if="errores.email">{{ errores.email }}</span>
                         </div>
                     </div>
                     <!-- NÚMERO -->
                     <div>
                         <div>
                             <input type="tel" placeholder="Número" pattern="[0-9]{3}[0-9]{3}[0-9]{3}"
-                                class="px-3 py-3 border rounded-xl w-full" v-model="formData.numero" maxlength="9">
-                            <span class="text-red-500" v-if="errores.numero">{{ errores.numero }}</span>
+                                class="px-3 py-3 border rounded-xl w-full" v-model="formData.phone" maxlength="9">
+                            <span class="text-red-500" v-if="errores.phone">{{ errores.phone }}</span>
                         </div>
                     </div>
                 </div>
@@ -225,28 +226,33 @@ const submit = (): void => {
                     <div>
                         <div>
                             <select placeholder="Tipo de reserva" id="id_evento"
-                                class="px-3 py-3 border rounded-xl w-full [color-scheme:dark]" v-model="formData.tipo">
+                                class="px-3 py-3 border rounded-xl w-full [color-scheme:dark]" v-model="formData.id_evento">
                                 <option value="" disabled selected>Tipo de reserva</option>
-                               
-                                <option v-for="e in eventsServiceprecie" :key="e.id" :value="(e.id)">{{ e.nombre }}</option>
+                                <option v-for="e in eventsServiceprecie" :key="e.id" :value="e.id">{{ e.nombre }} - ${{ e.precio }}</option>
                             </select>
-                            <span class="text-red-500" v-if="errores.tipo">{{ errores.tipo }}</span>
+                            <span class="text-red-500" v-if="errores.id_evento">{{ errores.id_evento }}</span>
                         </div>
                     </div>
                     <!-- FECHA DE RESERVA -->
                     <div>
                         <div>
                             <input type="date" name="" id="" placeholder="Fecha de reserva"
-                                class="px-3 py-3 border rounded-xl w-full [color-scheme:dark]" v-model="formData.fecha">
-                            <span class="text-red-500" v-if="errores.fecha">{{ errores.fecha }}</span>
+                                class="px-3 py-3 border rounded-xl w-full [color-scheme:dark]" v-model="formData.date">
+                            <span class="text-red-500" v-if="errores.date">{{ errores.date }}</span>
                         </div>
                     </div>
                     <!-- HORA DE RESERVA -->
                     <div>
                         <div>
-                            <input type="time" name="" id="" placeholder="Hora de reserva"
-                                class="px-3 py-3 border rounded-xl w-full [color-scheme:dark]" v-model="formData.hora">
-                            <span class="text-red-500" v-if="errores.hora">{{ errores.hora }}</span>
+                            <input type="time" name="" id="" placeholder="Hora de inicio"
+                                class="px-3 py-3 border rounded-xl w-full [color-scheme:dark]" v-model="formData.start_time">
+                            <span class="text-red-500" v-if="errores.start_time">{{ errores.start_time }}</span>
+                        </div>
+                    </div><div>
+                        <div>
+                            <input type="time" name="" id="" placeholder="Hora de fin"
+                                class="px-3 py-3 border rounded-xl w-full [color-scheme:dark]" v-model="formData.end_time">
+                            <span class="text-red-500" v-if="errores.end_time">{{ errores.end_time }}</span>
                         </div>
                     </div>
                 </div>
