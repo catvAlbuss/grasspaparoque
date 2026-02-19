@@ -38,18 +38,18 @@ class EventosController extends Controller
      */
     public function store(Request $request)
     {
-        $validate = $request -> validate([
-            'nombre'=> ['required', 'string', 'max:250'],
-            'precio'=> ['required', 'numeric','min:0'],
-            'descripcion'=> ['required', 'string', 'max:1000'],
-            'estado'=>['required','boolean'],
-        ]);   
+        $validate = $request->validate([
+            'nombre' => ['required', 'string', 'max:250'],
+            'precio' => ['required', 'numeric', 'min:0'],
+            'descripcion' => ['required', 'string', 'max:1000'],
+            'estado' => ['required', 'in:Libre,Ocupado'],
+        ]);
 
         $events = Eventos::create([
-            'nombre'=>$validate['nombre'],
-            'precio'=>$validate['precio'],
-            'descripcion'=>$validate['descripcion'] ?? null,
-            'estado'=>$validate['estado'],
+            'nombre' => $validate['nombre'],
+            'precio' => $validate['precio'],
+            'descripcion' => $validate['descripcion'] ?? null,
+            'estado' => $validate['estado'],
         ]);
 
         // $events->syncRoles([$validate['role']]);
@@ -81,20 +81,21 @@ class EventosController extends Controller
         $events = Eventos::query()->findOrFail($eventosId);
 
         $validate = $request->validate([
-            'nombre'=> ['required', 'string', 'max:250'],
-            'precio'=> ['required', 'numeric','min:0'],
-            'descripcion'=> ['required', 'string', 'max:1000'],
-            'estado'=>['required','boolean'],
+            'nombre' => ['required', 'string', 'max:250'],
+            'precio' => ['required', 'numeric', 'min:0'],
+            'descripcion' => ['required', 'string', 'max:1000'],
+            'estado' => ['required', 'in:Libre,Ocupado'],
         ]);
 
         $payload = [
             'nombre' => $validate['nombre'],
             'precio' => $validate['precio'],
-            'descripcion'=> $validate['descripcion'],
+            'descripcion' => $validate['descripcion'],
             'estado' => $validate['estado'],
         ];
-        
-        Log:info($payload);
+
+        Log:
+        info($payload);
         // if (! empty($validated['password'])) {
         //     $payload['password'] = $validated['password'];
         // }

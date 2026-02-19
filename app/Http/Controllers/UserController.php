@@ -38,7 +38,7 @@ class UserController extends Controller
             'users' => $users,
             'roles' => $roles,
         ]);
-    }
+    }   
 
     /**
      * Show the form for creating a new resource.

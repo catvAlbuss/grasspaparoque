@@ -11,6 +11,7 @@ import { dashboard } from '@/routes';
 import eventos from '@/routes/eventos';
 import users from '@/routes/users';
 import products from '@/routes/products';
+import reservations from '@/routes/reservations';
 
 const mainNavItems: NavItem[] = [
     {
@@ -27,6 +28,11 @@ const mainNavItems: NavItem[] = [
         title: 'eventos',
         href: eventos.index.url(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'reservaciones',
+        href: reservations.index.url(),
+        icon: LayoutGrid,  
     },
     {
         title: 'productos',

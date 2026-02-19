@@ -1,7 +1,85 @@
 <script setup lang="ts">
-import { ref, computed, reactive } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useForm } from '@inertiajs/vue3';
 
-const formData = reactive({
+
+type Evento = {
+    id: number;
+    nombre: string;
+    precio: number;
+};
+
+type reservationData = {
+    nombre: string;
+    apellido: string;
+    correo: string;
+    numero: string;
+
+    tipo: string | '';
+    fecha: string;
+    hora: string;
+};
+
+type Reservation = {
+    id: number;
+    id_evento: string;
+    nombre: string;
+    apellido: string;
+    correo: string;
+    numero: string;
+    tipo: string[];
+    fecha: string;
+    hora: string;
+};
+
+type props = {
+    reservations: Reservation[];
+    eventos: Evento[];
+};
+
+const eventsServiceprecie = ref<Evento[]>([]);
+const props = defineProps<props>();
+
+
+onMounted(async () => {
+    try {
+        const response = await fetch('/events/type_events', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const data = await response.json();
+
+        if (Array.isArray(data)) {
+            const eventosprecio = data.map((r) => ({
+                id: r.id,
+                nombre: r.nombre,
+                precio: r.precio,
+            }))
+
+            eventsServiceprecie.value = eventosprecio;
+            console.log('Reservaciones:', eventosprecio)
+        } else {
+            console.error('La respuesta no es un array:', data)
+        }
+    } catch (error) {
+        console.error('Error al cargar reservas:', error)
+    }
+})
+
+console.log('Eventos cargados:', eventsServiceprecie)
+
+const reservations = computed(() => props.eventos);
+
+const isEditing = computed(() => !!reservations.value);
+
+const formData = useForm<reservationData>({
     nombre: '',
     apellido: '',
     correo: '',
@@ -11,13 +89,17 @@ const formData = reactive({
     hora: '',
 });
 
-// const onSubmit = () => {
-//     console.log('Bien hecho chato:', formData.value);
-//     // validateEmail(); // Ensure final validation on submit
-//     // if (isFormValid.value) {
-//     //     console.log('Form submitted successfully:', email.value);
-//     // }
-// };
+const deleteForm = useForm({});
+const deleteError = computed(() => (deleteForm.errors as Record<string, string | undefined>).delete);
+const editingId = ref<number | null>(null);
+
+
+const resetForm = (): void => {
+    editingId.value = null;
+    formData.reset();
+    formData.clearErrors();
+};
+
 
 const errores = ref({
     nombre: '',
@@ -44,73 +126,46 @@ const validarFormulario = () => {
     if (!formData.apellido) errores.value.apellido = 'El apellido es obligatorio';
     if (!formData.correo) errores.value.correo = 'El correo es obligatorio';
     if (!formData.numero) errores.value.numero = 'El número es obligatorio';
-    if (!formData.tipo) errores.value.tipo = 'El tipo de evento es obligatorio';
+    // if (!formData.tipo) errores.value.tipo = 'El tipo de evento es obligatorio';
     if (!formData.fecha) errores.value.fecha = 'La fecha es obligatorio';
     if (!formData.hora) errores.value.hora = 'La hora es obligatorio';
 
     return Object.keys(errores.value).length === 0;
 }
 
-const enviarFormulario = () => {
-    if (validarFormulario()) {
-        alert('Formulario válido, enviando...');
-        console.log(formData);
+// const enviarFormulario = () => {
+//     if (validarFormulario()) {
+//         alert('Formulario válido, enviando...');
+//         console.log(formData);
 
-    } else {
-        alert('Por favor, corrija los errores.');
-    }
+//     } else {
+//         alert('Por favor, corrija los errores.');
+//     }
+// };
+
+
+const submit = (): void => {
+
+    // if (!validarFormulario()) {
+    //     alert('Por favor, corrija los errores.');
+    //     return;
+    // }
+
+    formData.post('/reservations', {
+        onSuccess: () => {
+            alert('Reservación creada con éxito');
+            resetForm();
+        },
+        onError: () => alert('Error al crear la reservación'),
+    });
 };
-
-// const touched = ref({
-//     nombre: false,
-//     apellido: false,
-//     correo: false,
-//     numero: false,
-//     tipo: false,
-//     fecha: false,
-//     hora: false,
-// })
-
-// // VALIDAR NOMBRE
-// const nombre = ref('');
-// const errorsNombre = ref({ nombre: '' });
-
-// const validateNombre = () => {
-//     if (!nombre.value) {
-//         errorsNombre.value.nombre = 'El nombre es necesario chato';
-//     } else if (!/^\S+@\S+\.\S+$/.test(nombre.value)) {
-//         errorsNombre.value.nombre = 'Error chatito';
-//     } else {
-//         errorsNombre.value.nombre = '';
-//     }
-// };
-
-// // VALIDAR EMAIL
-// const email = ref('');
-// const errorsEmail = ref({ email: '' });
-
-// const validateEmail = () => {
-//     console.log(email.value)
-//     if (!email.value) {
-//         errorsEmail.value.email = 'Email is required.';
-//     } else if (!/^\S+@\S+\.\S+$/.test(email.value)) {
-//         errorsEmail.value.email = 'Invalid email format.';
-//     } else {
-//         errorsEmail.value.email = '';
-//     }
-// };
-
-// const isFormValid = computed(() => {
-//     // Check all fields for errors
-//     return !errorsEmail.value.email && email.value;
-// });
 
 </script>
 
 <template>
     <section>
         <!-- FORMULARIO -->
-        <form @submit.prevent="enviarFormulario">
+        <form @submit.prevent="submit">
             <!-- MAIN -->
             <div class="grid md:grid-cols-3 gap-5 p-8 mt-2 bg-black text-white md:h-80">
                 <!-- COLUMNA 1 -->
@@ -124,7 +179,7 @@ const enviarFormulario = () => {
                     <div class="flex justify-center items-center">
                         <button type="submit"
                             class="border-white border-[2px] px-2 py-2 rounded-xl hover:bg-white hover:text-black hover:scale-110 lg:w-[30%] lg:h-[50%] md:text-lg">
-                            Reservar
+                            {{ isEditing ? 'Actualizar' : 'Reservar' }}
                         </button>
                     </div>
                 </div>
@@ -169,12 +224,11 @@ const enviarFormulario = () => {
                     <!-- TIPO DE RESERVA -->
                     <div>
                         <div>
-                            <select placeholder="Tipo de reserva"
+                            <select placeholder="Tipo de reserva" id="id_evento"
                                 class="px-3 py-3 border rounded-xl w-full [color-scheme:dark]" v-model="formData.tipo">
                                 <option value="" disabled selected>Tipo de reserva</option>
-                                <option value="futbol" class="text-black">Fútbol</option>
-                                <option value="voley" class="text-black">Vóley</option>
-                                <option value="evento" class="text-black">Evento</option>
+                               
+                                <option v-for="e in eventsServiceprecie" :key="e.id" :value="(e.id)">{{ e.nombre }}</option>
                             </select>
                             <span class="text-red-500" v-if="errores.tipo">{{ errores.tipo }}</span>
                         </div>
