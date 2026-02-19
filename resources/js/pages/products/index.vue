@@ -69,6 +69,7 @@ const startEdit = (products: Products): void => {
     form.expiration_date = products.expiration_date;
 };
 
+//funcion para pasar los datos al controlador de Productos
 const submit = (): void => {
     const options = {
         preserveScroll: true,
@@ -76,7 +77,6 @@ const submit = (): void => {
     };
 
     if (isEditing.value && editingId.value !== null) {
-        //form.put(ProductsController.update.url(editingId.value), options);
         form.put(ProductsController.update.url(editingId.value), options);
         return;
     }
@@ -103,6 +103,8 @@ const remove = (products: Products): void => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="space-y-6 p-4">
+
+            <!--  -->
             <section class="rounded-xl border border-sidebar-border/70 bg-background p-4">
                 <h1 class="text-xl font-semibold">
                     {{ isEditing ? 'Editar producto' : 'Nuevo producto' }}
@@ -111,6 +113,7 @@ const remove = (products: Products): void => {
                     Gestiona los productos desde esta ventana.
                 </p>
 
+                <!-- Apartado del forumulario de registro y actualizar un producto -->
                 <form class="mt-4 grid gap-4 md:grid-cols-2" @submit.prevent="submit">
                     <div class="grid gap-2">
                         <Label for="name">Nombre</Label>
@@ -173,6 +176,7 @@ const remove = (products: Products): void => {
                 </form>
             </section>
 
+        <!-- Apartado para el listado de los productos -->
             <section class="rounded-xl border border-sidebar-border/70 bg-background p-4">
                 <h2 class="text-lg font-semibold">Listado de productos</h2>
 
@@ -204,6 +208,7 @@ const remove = (products: Products): void => {
                                 <td class="px-2 py-2">{{ producto.price_higher }}</td>
                                 <td class="px-2 py-2">
                                     <div class="flex gap-2">
+                                        <!-- Botones de actualizar y eliminar un producto -->
                                         <Button type="button" variant="secondary" size="sm"
                                             :disabled="form.processing || deleteForm.processing"
                                             @click="startEdit(producto)">

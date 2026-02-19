@@ -14,8 +14,12 @@ return new class extends Migration
         Schema::create('boxes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_pay')->constrained('pays')->onDelete('cascade');
-            $table->foreignId('id_reservations')->constrained('reservations')->onDelete('cascade');
-            $table->decimal('amount',10,2);
+            // $table->foreignId('id_reservations')->constrained('reservations')->nullOnDelete()->onDelete('cascade');
+            $table->foreignId('id_reservations')
+                ->nullable() // Indispensable para permitir NULL en la DB
+                ->constrained('reservations')
+                ->nullOnDelete(); // Recomendado si es opcional
+            $table->decimal('amount', 10, 2);
             $table->timestamp('date_time');
             $table->timestamps();
         });

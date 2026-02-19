@@ -109,7 +109,7 @@ class ProductsController extends Controller
      * Remove the specified resource from storage.
      * Eliminar un producto
      */
-    public function destroy(Request $req, string $products_id)
+    public function destroy(string $products_id)
     {
         //
         $prod = Products::query()->findOrFail($products_id);
