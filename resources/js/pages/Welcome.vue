@@ -7,8 +7,7 @@ import Services1 from '@/components/principal/services-1.vue';
 import Carrusel from '@/components/principal/carrusel.vue';
 import Form1 from '@/components/principal/form-1.vue';
 import Navbar from '@/components/principal/navbar.vue';
-import reservations from '@/routes/reservations';
-import eventos from '@/routes/eventos';
+import ChatbotReservas from '@/components/principal/chatbot-reservas.vue';
 </script>
 
 <template>
@@ -18,6 +17,7 @@ import eventos from '@/routes/eventos';
     <Calendar />
     <Services1 />
     <Carrusel />
-    <Form1 :reservations="reservations" :eventos="eventos"/>
+    <Form1 :reservations="[]" :eventos="[]" />
+    <ChatbotReservas />
 
 </template>

@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\EventosController;
-use App\Http\Controllers\UserController;
 use Illuminate\Database\Eloquent\Model;
 
 class Reservation extends Model
@@ -18,26 +15,50 @@ class Reservation extends Model
         'end_time',
         'date',
         'reservation_status',
+        'payment_status',
+        'payment_reviewed_at',
+        'payment_proof_name',
+        'payment_proof_number',
     ];
 
-    public function eventos()
+    public function evento()
     {
         return $this->belongsTo(Eventos::class, 'id_evento');
     }
 
-    public function users()
+    public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
     }
     
-    public function pays()
+    public function pay()
     {
         return $this->belongsTo(Pay::class, 'id_pay');
     }
     
-    public function customers()
+    public function customer()
     {
         return $this->belongsTo(Customer::class, 'id_customer');
     }
 
+    // Backward-compatible relation aliases used in existing code.
+    public function eventos()
+    {
+        return $this->evento();
+    }
+
+    public function users()
+    {
+        return $this->user();
+    }
+
+    public function pays()
+    {
+        return $this->pay();
+    }
+
+    public function customers()
+    {
+        return $this->customer();
+    }
 }

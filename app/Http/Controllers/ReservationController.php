@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Reservation;
-use App\Models\Eventos;
 use App\Models\Customer;
+use App\Models\Eventos;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class ReservationController extends Controller
@@ -16,10 +18,10 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $reservations = Reservation::with(['eventos:id,nombre', 'users:id,name', 'pays:id,amount', 'customers:id,name'])
+        $reservations = Reservation::with(['evento:id,nombre', 'user:id,name', 'pay:id,amount', 'customer:id,name'])
             ->latest()
             ->get()
-            ->map(fn(Reservation $reservation) => [
+            ->map(fn (Reservation $reservation) => [
                 'id' => $reservation->id,
                 'id_evento' => $reservation->id_evento,
                 'id_user' => $reservation->id_user,
@@ -29,19 +31,23 @@ class ReservationController extends Controller
                 'end_time' => $reservation->end_time,
                 'date' => $reservation->date,
                 'reservation_status' => $reservation->reservation_status,
-
-                'event_name' => $reservation->event?->nombre,
+                'payment_status' => $reservation->payment_status,
+                'payment_reviewed_at' => $reservation->payment_reviewed_at,
+                'payment_proof_name' => $reservation->payment_proof_name,
+                'payment_proof_number' => $reservation->payment_proof_number,
+                'event_name' => $reservation->evento?->nombre,
                 'user_name' => $reservation->user?->name,
                 'pay_amount' => $reservation->pay?->amount,
                 'customer_name' => $reservation->customer?->name,
+                'customer_lastname' => $reservation->customer?->lastname,
+                'customer_dni' => $reservation->customer?->dni,
+                'customer_phone' => $reservation->customer?->phone,
             ]);
 
         return Inertia::render('reservations/index', [
             'reservations' => $reservations,
             'eventos' => Eventos::select('id', 'nombre', 'precio')->get(),
         ]);
-
-        return  inertia_location('/principal/form-1');
     }
 
     /**
@@ -49,8 +55,6 @@ class ReservationController extends Controller
      */
     public function create()
     {
-
-
         return to_route('reservations.index');
     }
 
@@ -59,85 +63,77 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        // $validated = $request->validate([
-        //     // CREAR RESERVAS EN DASHBOARD
-        //     // 'id_evento' => ['required', 'integer', Rule::exists('eventos', 'id')],
-        //     // 'id_user' => ['required', 'integer', Rule::exists('users', 'id')],
-        //     // 'id_pay' => ['required', 'integer', Rule::exists('pays', 'id')],
-        //     // 'id_customer' => ['required', 'integer', Rule::exists('customers', 'id')],
-        //     // 'start_time' => ['required', 'date_format:H:i'],
-        //     // 'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
-        //     // 'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
-        //     // 'reservation_status' => ['required', 'in:free,busy'],
-
-        //     // CREAR RESERVAS EN EL INICIO
-        //     'name' => ['required', 'string', 'max:255'],
-        //     'lastname'=>['required', 'string', 'max:255'],
-        //     'email' => ['required', 'email', 'max:255'],
-        //     'phone' => ['required', 'string', 'max:20'],
-
-        //     'id_evento' => ['required', 'integer', Rule::exists('eventos', 'id')],
-        //     'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
-        //     'start_time' => ['required', 'date_format:H:i'],
-        // ]);
-
-        // $reservation = Reservation::create([
-        //     'id_evento' => $validated['id_evento'],
-        //     'id_user' => $validated['id_user'],
-        //     'id_pay' => $validated['id_pay'],
-        //     'id_customer' => $validated['id_customer'],
-        //     'start_time' => $validated['start_time'],
-        //     'end_time' => $validated['end_time'],
-        //     'date' => $validated['date'],
-        //     'reservation_status' => $validated['reservation_status']
-        // ]);
-
-        // // return response()->json([
-        // //     'message' => 'Reservación completada',
-        // //     'data' => $reservation
-        // // ], 201);
-        // // Reservation::create($validated);
-        // // return DB:trasaction(function() use ($request){
-        // //     $customer = Customer::updateOrcreate([
-
-        // //     ]);
-        // // });
-        // return response()->json($reservation);
-
-        // VALIDACION DE RESERVA DESDE EL INICIO
-        // $request->validate([
-        //     'name' => ['required', 'string', 'max:255'],
-        //     'lastname' => ['required', 'string', 'max:255'],
-        //     'email' => ['required', 'email', 'max:255'],
-        //     'phone' => ['required', 'string', 'max:20'],
-
-        //     'id_evento' => ['required', 'integer', Rule::exists('eventos', 'id')],
-        //     'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
-        //     'start_time' => ['required', 'date_format:H:i'],
-        //     'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
-        // ]);
-
-        $customer = Customer::create([
-            'name' => $request->name,
-            'lastname' => $request->lastname,
-            'email' => $request->email,
-            'phone' => $request->phone,
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'lastname' => ['nullable', 'string', 'max:255'],
+            'dni' => ['nullable', 'regex:/^\d{8}$/'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['required', 'string', 'max:20'],
+            'id_evento' => ['required', 'integer', Rule::exists('eventos', 'id')],
+            'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+            'payment_proof_number' => ['nullable', 'integer', 'min:1'],
+            'payment_proof_file' => ['nullable', 'file', 'image', 'max:5120'],
         ]);
 
-        $reservation = Reservation::create([
-            'id_evento' => $request->id_evento,
-            // 'id_user' => auth()->id(),
-            // 'id_pay' => null, // Aquí puedes asignar un valor predeterminado o manejarlo según tu lógica
-            'id_customer' => $customer->id,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
-            'date' => $request->date,
-            'reservation_status' => 'busy', // O 'busy', dependiendo de tu lógica
-        ]);
+        [$customerName, $customerLastname] = $this->normalizeCustomerName(
+            $validated['name'],
+            $validated['lastname'] ?? null
+        );
+
+        $email = $validated['email'] ?? null;
+        if ($email === null || $email === '') {
+            $safePhone = preg_replace('/\D+/', '', $validated['phone']);
+            $email = 'reserva_' . ($safePhone ?: time()) . '@local.test';
+        }
+
+        $reservation = DB::transaction(function () use ($validated, $request, $customerName, $customerLastname, $email) {
+            $hasConflict = Reservation::query()
+                ->where('id_evento', $validated['id_evento'])
+                ->where('date', $validated['date'])
+                ->where('reservation_status', 'busy')
+                ->where('start_time', '<', $validated['end_time'])
+                ->where('end_time', '>', $validated['start_time'])
+                ->exists();
+
+            if ($hasConflict) {
+                throw ValidationException::withMessages([
+                    'start_time' => 'Ya existe una reserva ocupada en ese horario.',
+                ]);
+            }
+
+            $customer = Customer::create([
+                'name' => $customerName,
+                'lastname' => $customerLastname,
+                'dni' => $validated['dni'] ?? null,
+                'email' => $email,
+                'phone' => $validated['phone'],
+            ]);
+
+            $storedProofName = null;
+            if ($request->hasFile('payment_proof_file')) {
+                $storedProofName = basename(
+                    $request->file('payment_proof_file')->store('reservation-proofs', 'public')
+                );
+            }
+
+            return Reservation::create([
+                'id_evento' => $validated['id_evento'],
+                'id_customer' => $customer->id,
+                'start_time' => $validated['start_time'],
+                'end_time' => $validated['end_time'],
+                'date' => $validated['date'],
+                'reservation_status' => 'free',
+                'payment_status' => 'pending',
+                'payment_proof_name' => $storedProofName,
+                'payment_proof_number' => $validated['payment_proof_number'] ?? null,
+            ]);
+        });
 
         return response()->json([
-            'message' => 'Reservación completada',
-            'data' => $reservation
+            'message' => 'Reserva completada',
+            'data' => $reservation,
         ], 201);
     }
 
@@ -157,7 +153,6 @@ class ReservationController extends Controller
         return Inertia::render('reservations/edit', [
             'reservation' => $reservation,
         ]);
-        return to_route('reservations.index');
     }
 
     /**
@@ -168,29 +163,31 @@ class ReservationController extends Controller
         $validated = $request->validate([
             'id_evento' => ['required', 'integer', Rule::exists('eventos', 'id')],
             'id_user' => ['required', 'integer', Rule::exists('users', 'id')],
-            'id_pay' => ['required', 'integer', Rule::exists('pays', 'id')],
+            'id_pay' => ['nullable', 'integer', Rule::exists('pays', 'id')],
             'id_customer' => ['required', 'integer', Rule::exists('customers', 'id')],
             'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
             'date' => ['required', 'date_format:Y-m-d'],
             'reservation_status' => ['required', 'in:free,busy'],
+            'payment_status' => ['required', 'in:pending,approved,rejected'],
+            'payment_proof_name' => ['nullable', 'string', 'max:255'],
+            'payment_proof_number' => ['nullable', 'integer', 'min:1'],
         ]);
 
         $reservation->update([
             'id_evento' => $validated['id_evento'],
             'id_user' => $validated['id_user'],
-            'id_pay' => $validated['id_pay'],
+            'id_pay' => $validated['id_pay'] ?? null,
             'id_customer' => $validated['id_customer'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
             'date' => $validated['date'],
-            'reservation_status' => $validated['reservation_status']
+            'reservation_status' => $validated['reservation_status'],
+            'payment_status' => $validated['payment_status'],
+            'payment_proof_name' => $validated['payment_proof_name'] ?? null,
+            'payment_proof_number' => $validated['payment_proof_number'] ?? null,
         ]);
 
-        // return response()->json([
-        //     'message' => 'Reservación actualizada',
-        //     'data' => $reservation
-        // ], 200);
         return to_route('reservations.index');
     }
 
@@ -201,49 +198,50 @@ class ReservationController extends Controller
     {
         $reservation->delete();
 
-        // return response()->json([
-        //     'message' => 'Reservación eliminada',
-        // ], 200);
         return to_route('reservations.index');
     }
-
-
-
-    //BOTON DE CAMBIAR ESTADO DE RESERVA
-    // public function toggleStatus(Reservation $reservation)
-    // {
-    //     $reservation->update([
-    //         'reservation_status' => $reservation->reservation_status === 'free' ? 'busy' : 'free'
-    //     ]);
-    //     return to_route('reservations.index');
-    // }
 
     // FUNCION DE MOSTRAR ESTADO:OCUPADO EN EL CALENDARIO
     public function getReservasOcupadas()
     {
         $reservasOcupadas = Reservation::where('reservation_status', 'busy')
-            ->select('id', 'date', 'start_time', 'end_time')
+            ->select('id', 'id_evento', 'date', 'start_time', 'end_time')
             ->orderBy('date')
             ->orderBy('start_time')
             ->get();
 
-        $eventos = $reservasOcupadas->map(function ($reserva) {
-            return [
-                'id' => $reserva->id,
-                'date' => $reserva->date,
-                'start_time' => $reserva->start_time,
-                'end_time' => $reserva->end_time,
-            ];
-        });
-
-        return response()->json($eventos);
+        return response()->json($reservasOcupadas);
     }
 
     // FUNCION PARA TRAER EL TIPO DE RESERVA
     public function getTypeEvents()
     {
-        $type_events = Eventos::select('id', 'nombre', 'precio')->get();
-        return response()->json($type_events);
+        if (Eventos::count() === 0) {
+            Eventos::create([
+                'nombre' => 'Futbol',
+                'precio' => 50,
+                'descripcion' => 'Reserva de cancha de futbol',
+                'estado' => 'free',
+            ]);
+
+            Eventos::create([
+                'nombre' => 'Voley',
+                'precio' => 50,
+                'descripcion' => 'Reserva de cancha de voley',
+                'estado' => 'free',
+            ]);
+
+            Eventos::create([
+                'nombre' => 'Evento',
+                'precio' => 0,
+                'descripcion' => 'Eventos generales con precio variable',
+                'estado' => 'free',
+            ]);
+        }
+
+        $typeEvents = Eventos::select('id', 'nombre', 'precio')->get();
+
+        return response()->json($typeEvents);
     }
 
     // CAPTURAR DATOS DE CLIENTE PARA RESERVA DESDE EL INICIO
@@ -252,15 +250,71 @@ class ReservationController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'lastname' => ['required', 'string', 'max:255'],
+            'dni' => ['nullable', 'regex:/^\d{8}$/'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
         ]);
 
         $customer = Customer::create($validated);
+
         return response()->json([
             'message' => 'Cliente creado',
-            'data' => $customer
+            'data' => $customer,
         ], 201);
-        return response()->json($customer);
+    }
+
+    public function approvePayment(Reservation $reservation)
+    {
+        $hasConflict = Reservation::query()
+            ->where('id', '!=', $reservation->id)
+            ->where('id_evento', $reservation->id_evento)
+            ->where('date', $reservation->date)
+            ->where('reservation_status', 'busy')
+            ->where('start_time', '<', $reservation->end_time)
+            ->where('end_time', '>', $reservation->start_time)
+            ->exists();
+
+        if ($hasConflict) {
+            return back()->withErrors([
+                'approval' => 'No se puede aprobar: ese horario ya fue ocupado por otra reserva.',
+            ]);
+        }
+
+        $reservation->update([
+            'payment_status' => 'approved',
+            'payment_reviewed_at' => now(),
+            'reservation_status' => 'busy',
+            'id_user' => auth()->id(),
+        ]);
+
+        return to_route('reservations.index');
+    }
+
+    public function rejectPayment(Reservation $reservation)
+    {
+        $reservation->update([
+            'payment_status' => 'rejected',
+            'payment_reviewed_at' => now(),
+            'reservation_status' => 'free',
+            'id_user' => auth()->id(),
+        ]);
+
+        return to_route('reservations.index');
+    }
+
+    private function normalizeCustomerName(string $name, ?string $lastname = null): array
+    {
+        if (!empty($lastname)) {
+            return [trim($name), trim($lastname)];
+        }
+
+        $parts = preg_split('/\s+/', trim($name)) ?: [];
+        if (count($parts) <= 1) {
+            return [trim($name), '.'];
+        }
+
+        $firstName = array_shift($parts);
+
+        return [$firstName, implode(' ', $parts)];
     }
 }

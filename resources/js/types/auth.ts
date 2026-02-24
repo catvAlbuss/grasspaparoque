@@ -11,6 +11,8 @@ export type User = {
 
 export type Auth = {
     user: User;
+    role_names?: string[];
+    current_role?: string | null;
 };
 
 export type TwoFactorConfigContent = {

@@ -1,19 +1,36 @@
 <script setup lang="ts">
+import { usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Box, Folder, LayoutGrid, Users2 } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, ReceiptText, Users2 } from 'lucide-vue-next';
+import { computed } from 'vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { dashboard } from '@/routes';
+import box from '@/routes/box';
+import eventos from '@/routes/eventos';
+import products from '@/routes/products';
+import reservations from '@/routes/reservations';
+import users from '@/routes/users';
 import { type NavItem } from '@/types';
 import AppLogo from './AppLogo.vue';
-import { dashboard } from '@/routes';
-import eventos from '@/routes/eventos';
-import users from '@/routes/users';
-import products from '@/routes/products';
-import box from '@/routes/box';
 
-const mainNavItems: NavItem[] = [
+type PageProps = {
+    auth?: {
+        role_names?: string[];
+    };
+};
+
+const page = usePage<PageProps>();
+const roleNames = computed(() => page.props.auth?.role_names ?? []);
+const canManageReservations = computed(() => {
+    const allowed = ['root', 'gerente', 'administrador', 'asistente'];
+    return roleNames.value.some((role) => allowed.includes(role));
+});
+
+const mainNavItems = computed<NavItem[]>(() => {
+    const baseItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
@@ -39,7 +56,18 @@ const mainNavItems: NavItem[] = [
         href: box.index.url(),
         icon: LayoutGrid,
     },
-];
+    ];
+
+    if (canManageReservations.value) {
+        baseItems.push({
+            title: 'Comprobaciones',
+            href: reservations.index.url(),
+            icon: ReceiptText,
+        });
+    }
+
+    return baseItems;
+});
 
 const footerNavItems: NavItem[] = [
     {

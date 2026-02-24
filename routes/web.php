@@ -36,6 +36,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::resource('box', BoxController::class);
 
     
+    Route::patch('/reservations/{reservation}/approve-payment', [ReservationController::class, 'approvePayment'])
+        ->name('reservations.approve_payment');
+    Route::patch('/reservations/{reservation}/reject-payment', [ReservationController::class, 'rejectPayment'])
+        ->name('reservations.reject_payment');
     Route::resource('reservations', ReservationController::class);
     // Route::post('/reservations', [ReservationController::class, 'create'])->name('reservations.create');
 });

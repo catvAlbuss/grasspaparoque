@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="QR de pago Yape">
+  <rect width="512" height="512" fill="#ffffff"/>
+  <rect x="36" y="36" width="150" height="150" fill="#000000"/>
+  <rect x="58" y="58" width="106" height="106" fill="#ffffff"/>
+  <rect x="80" y="80" width="62" height="62" fill="#000000"/>
+  <rect x="326" y="36" width="150" height="150" fill="#000000"/>
+  <rect x="348" y="58" width="106" height="106" fill="#ffffff"/>
+  <rect x="370" y="80" width="62" height="62" fill="#000000"/>
+  <rect x="36" y="326" width="150" height="150" fill="#000000"/>
+  <rect x="58" y="348" width="106" height="106" fill="#ffffff"/>
+  <rect x="80" y="370" width="62" height="62" fill="#000000"/>
+  <rect x="228" y="228" width="24" height="24" fill="#000000"/>
+  <rect x="252" y="252" width="24" height="24" fill="#000000"/>
+  <rect x="276" y="228" width="24" height="24" fill="#000000"/>
+  <rect x="300" y="252" width="24" height="24" fill="#000000"/>
+  <rect x="324" y="228" width="24" height="24" fill="#000000"/>
+  <rect x="228" y="276" width="24" height="24" fill="#000000"/>
+  <rect x="276" y="276" width="24" height="24" fill="#000000"/>
+  <rect x="324" y="276" width="24" height="24" fill="#000000"/>
+  <rect x="228" y="300" width="24" height="24" fill="#000000"/>
+  <rect x="252" y="324" width="24" height="24" fill="#000000"/>
+  <rect x="300" y="324" width="24" height="24" fill="#000000"/>
+  <rect x="324" y="348" width="24" height="24" fill="#000000"/>
+  <text x="256" y="492" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#111111">QR de pago</text>
+</svg>
