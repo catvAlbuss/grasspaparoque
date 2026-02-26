@@ -45,7 +45,7 @@ const deleteForm = useForm({});
 const deleteError = computed(() => (deleteForm.errors as Record<string, string | undefined>).delete);
 const isEditing = computed(() => editingId.value !== null);
 
-// ── Badge de stock (clases completas ) ─────────────────────────────
+// Badge de stock 
 function getStockBadge(stock: number) {
     const num = parseInt(stock.toString());
     if (num === 0) return {
@@ -65,7 +65,7 @@ function getStockBadge(stock: number) {
     };
 }
 
-// ── Nivel de precio (clases completas Tailwind) ─────────────────────────────
+// Nivel de precio 
 const getPrecioClasses = (price: string): string => {
     const n = parseFloat(price) || 0;
     if (n === 0) return 'inline-flex items-center gap-0.5 rounded-md border border-zinc-700 bg-zinc-800/50 px-2 py-0.5 text-[0.78rem] font-bold text-zinc-400';
@@ -74,7 +74,7 @@ const getPrecioClasses = (price: string): string => {
     return 'inline-flex items-center gap-0.5 rounded-md border border-purple-500/25 bg-purple-500/[0.08] px-2 py-0.5 text-[0.78rem] font-bold text-purple-400';
 };
 
-// ── Stats ────────────────────────────────────────────
+// Estados
 const totalProducts = computed(() => products.value.length);
 const lowStockProducts = computed(() => products.value.filter(p => p.stock < 10 && p.stock > 0).length);
 const outOfStockProducts = computed(() => products.value.filter(p => p.stock === 0).length);
@@ -86,7 +86,7 @@ const totalInventoryValue = computed(() =>
     }, 0)
 );
 
-// Formatear moneda a Soles Peruanos (PEN)
+// Cambio de moneda a Soles Peruanos (PEN)
 const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('es-PE', {
         style: 'currency', currency: 'PEN', minimumFractionDigits: 2, currencyDisplay: 'symbol'
@@ -130,7 +130,7 @@ const remove = (product: Products): void => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-5 p-5">
 
-            <!-- ══ HERO HEADER ══════════════════════════════════ -->
+            <!-- HERO HEADER -->
             <div class="relative overflow-hidden rounded-[1.1rem] border border-green-400/[0.12] px-7 py-6"
                 style="background: linear-gradient(135deg, #052e16 0%, #14532d 45%, #15803d 100%);">
                 <div class="pointer-events-none absolute inset-0"
@@ -196,7 +196,7 @@ const remove = (product: Products): void => {
                 </div>
             </div>
 
-            <!-- ══ FORM CARD ════════════════════════════════════ -->
+            <!-- FORM CARD -->
             <section class="relative overflow-hidden rounded-[1.1rem] border border-border bg-background transition-shadow duration-300 hover:shadow-[0_4px_24px_rgba(22,163,74,0.07)]">
                 <div class="absolute inset-x-0 top-0 h-[2.5px]"
                     :class="isEditing ? 'bg-gradient-to-r from-amber-500 to-orange-400' : 'bg-gradient-to-r from-green-700 via-green-500 to-green-400'" />
@@ -217,8 +217,9 @@ const remove = (product: Products): void => {
                     </div>
                 </div>
 
+                <!-- Formulario de Registro Producto -->
                 <form class="grid grid-cols-1 gap-4 px-6 py-5 md:grid-cols-2" @submit.prevent="submit">
-                    <!-- Nombre -->
+                    
                     <div class="flex flex-col gap-1.5">
                         <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <Package :size="12" class="text-green-500" />
@@ -229,7 +230,6 @@ const remove = (product: Products): void => {
                         <InputError :message="form.errors.name" />
                     </div>
 
-                    <!-- Precio Unitario -->
                     <div class="flex flex-col gap-1.5">
                         <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <Tag :size="12" class="text-green-500" />
@@ -243,7 +243,6 @@ const remove = (product: Products): void => {
                         <InputError :message="form.errors.price_unit" />
                     </div>
 
-                    <!-- Descripción (full width) -->
                     <div class="col-span-full flex flex-col gap-1.5">
                         <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <FileText :size="12" class="text-green-500" />
@@ -254,7 +253,6 @@ const remove = (product: Products): void => {
                         <InputError :message="form.errors.description" />
                     </div>
 
-                    <!-- Stock -->
                     <div class="flex flex-col gap-1.5">
                         <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <CalendarDays :size="12" class="text-green-500" />
@@ -266,7 +264,6 @@ const remove = (product: Products): void => {
                         <InputError :message="form.errors.stock" />
                     </div>
 
-                    <!-- Precio al Mayor -->
                     <div class="flex flex-col gap-1.5">
                         <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <Tag :size="12" class="text-green-500" />
@@ -280,7 +277,6 @@ const remove = (product: Products): void => {
                         <InputError :message="form.errors.price_higher" />
                     </div>
 
-                    <!-- Fecha Vencimiento -->
                     <div class="flex flex-col gap-1.5">
                         <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <CalendarDays :size="12" class="text-green-500" />
@@ -309,7 +305,7 @@ const remove = (product: Products): void => {
                 </form>
             </section>
 
-            <!-- ══ TABLE CARD ═══════════════════════════════════ -->
+            <!-- TABLA CARD  -->
             <section class="relative overflow-hidden rounded-[1.1rem] border border-border bg-background transition-shadow duration-300 hover:shadow-[0_4px_24px_rgba(22,163,74,0.07)]">
                 <div class="absolute inset-x-0 top-0 h-[2.5px] bg-gradient-to-r from-green-700 via-green-500 to-green-400" />
                 
@@ -401,17 +397,17 @@ const remove = (product: Products): void => {
 
                                 <!-- Precio Unitario -->
                                 <td class="px-4 py-[0.85rem] align-middle">
-                                    <span :class="getPrecioClasses(producto.price_unit)">
+                                    <span :class="getPrecioClasses(producto.price_unit.toString())">
                                         <DollarSign :size="11" />
-                                        {{ formatCurrency(parseFloat(producto.price_unit) || 0) }}
+                                        {{ formatCurrency(producto.price_unit || 0) }}
                                     </span>
                                 </td>
 
                                 <!-- Precio al Mayor -->
                                 <td class="px-4 py-[0.85rem] align-middle">
-                                    <span :class="getPrecioClasses(producto.price_higher)">
+                                    <span :class="getPrecioClasses(producto.price_higher.toString())">
                                         <DollarSign :size="11" />
-                                        {{ formatCurrency(parseFloat(producto.price_higher) || 0) }}
+                                        {{ formatCurrency(producto.price_higher || 0) }}
                                     </span>
                                 </td>
 
@@ -421,7 +417,7 @@ const remove = (product: Products): void => {
                                     <span v-else class="text-[0.76rem] italic text-zinc-500">—</span>
                                 </td>
 
-                                <!-- Acciones (solo iconos) -->
+                                <!-- Acciones -->
                                 <td class="px-4 py-[0.85rem] align-middle text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         <button class="flex h-8 w-8 items-center justify-center rounded-lg border border-green-500/20 bg-green-500/10 text-green-500 transition-all hover:translate-y-[-2px] hover:border-green-600 hover:bg-green-600 hover:text-white hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)] disabled:cursor-not-allowed disabled:opacity-40"

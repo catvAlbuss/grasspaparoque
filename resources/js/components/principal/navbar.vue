@@ -2,120 +2,118 @@
 import { ref } from 'vue'
 import { Head, Link } from '@inertiajs/vue3';
 import { dashboard, login, register } from '@/routes';
-// withDefaults(
-//     defineProps<{
-//         canRegister: boolean;
-//     }>(),
-//     {
-//         canRegister: true,
-//     },
-// );
+
 const menuOpen = ref(false)
 
 const links = [
   { label: 'Inicio', to: { path: '/', hash: '#home' } },
   { label: 'Servicios', to: { path: '/', hash: '#services' } },
   { label: 'Contacto', to: { path: '/', hash: '#contact' } },
-  // { label: 'Dashboard', to: { path: '/dashboard' } },
 ]
-
-
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/90 backdrop-blur">
-    <nav class="m-auto flex max-w-full items-center justify-between px-2 py-3 sm:px-6">
-      <a href="#home" class="text-xl font-semibold tracking-tight text-slate-900">
-        Grass Papa Roque
+  <header class="sticky top-0 z-50 w-full border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-md">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+      
+      <!-- Logo -->
+      <a href="#home" class="group flex items-center gap-2">
+        <span class="text-xl font-bold text-white tracking-tight">Grass Papa Roque</span>
       </a>
 
-      <div class="hidden items-center gap-2 md:flex">
-        <RouterLink v-for="link in links" :key="link.label" :to="link.to"
-          class="text-sm font-medium text-slate-700 transition hover:text-slate-900">
+      <!-- Navegador -->
+      <div class="hidden items-center gap-1 md:flex">
+        <RouterLink 
+          v-for="link in links" 
+          :key="link.label" 
+          :to="link.to"
+          class="rounded-lg px-4 py-2 text-sm font-medium text-zinc-300 transition-all hover:bg-zinc-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+        >
           {{ link.label }}
         </RouterLink>
       </div>
 
-      <Link v-if="$page.props.auth.user" :href="dashboard()"
-        class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal hover:bg-black dark:text-black dark:hover:text-white hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]">
-      Dashboard
-      </Link>
-      <template v-else>
-        <Link :href="login()"
-          class="inline-block rounded-sm border border-black px-5 py-1.5 text-sm leading-normal hover:bg-black dark:text-black dark:hover:text-white dark:hover:border-[#3E3E3A]">
-        Log in
+      <!-- Botones de autenticación -->
+      <div class="hidden items-center gap-3 md:flex">
+        <Link 
+          v-if="$page.props.auth.user" 
+          :href="dashboard()"
+          class="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-600 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+        >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+          Dashboard
         </Link>
-        <!-- <Link v-if="canRegister" :href="register()"
-          class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]">
-        Register
-        </Link> -->
-      </template>
+        
+        <template v-else>
+          <Link 
+            :href="login()"
+            class="inline-flex items-center rounded-lg border-2 border-white/20 bg-transparent px-4 py-2 text-sm font-semibold text-white transition-all hover:border-white/40 hover:bg-white/10 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+          >
+            Log in
+          </Link>
+        </template>
+      </div>
 
-      <button type="button"
-        class="inline-flex items-center justify-center rounded-lg border border-slate-200 p-2 text-slate-700 transition hover:bg-slate-100 md:hidden"
-        @click="menuOpen = !menuOpen" :aria-expanded="menuOpen ? 'true' : 'false'" aria-label="Abrir menú">
-        <svg v-if="!menuOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"
-          aria-hidden="true">
-          <path fill-rule="evenodd"
-            d="M3 5h14a1 1 0 010 2H3a1 1 0 010-2zm0 4h14a1 1 0 010 2H3a1 1 0 010-2zm0 4h14a1 1 0 010 2H3a1 1 0 010-2z"
-            clip-rule="evenodd" />
+      <!-- Boton de menú móvil -->
+      <button 
+        type="button"
+        class="inline-flex items-center justify-center rounded-lg bg-zinc-800 p-2 text-white transition-all hover:bg-zinc-700 md:hidden"
+        @click="menuOpen = !menuOpen" 
+        :aria-expanded="menuOpen ? 'true' : 'false'" 
+        aria-label="Abrir menú"
+      >
+        <svg v-if="!menuOpen" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"
-          aria-hidden="true">
-          <path fill-rule="evenodd"
-            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-            clip-rule="evenodd" />
+        <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
     </nav>
 
-    <div class="md:hidden" :class="menuOpen ? 'block' : 'hidden'">
-      <div class="border-t border-slate-200 bg-white px-4 py-4 sm:px-6">
-        <div class="flex flex-col gap-3">
-          <RouterLink v-for="link in links" :key="link.label" :to="link.to"
-            class="text-sm font-medium text-slate-700 transition hover:text-slate-900" @click="menuOpen = false">
-            {{ link.label }}
-          </RouterLink>
-          <Link v-if="$page.props.auth.user" :href="dashboard()"
-            class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]">
-          Dashboard
+    <!-- Mobile Menu -->
+    <div 
+      class="border-t border-zinc-800 bg-zinc-900 md:hidden"
+      :class="menuOpen ? 'block' : 'hidden'"
+    >
+      <div class="space-y-2 px-4 py-4 sm:px-6">
+        <RouterLink 
+          v-for="link in links" 
+          :key="link.label" 
+          :to="link.to"
+          class="block rounded-lg px-4 py-3 text-base font-medium text-zinc-300 transition-all hover:bg-zinc-800 hover:text-white"
+          @click="menuOpen = false"
+        >
+          {{ link.label }}
+        </RouterLink>
+        
+        <div class="border-t border-zinc-800 pt-3 mt-3">
+          <Link 
+            v-if="$page.props.auth.user" 
+            :href="dashboard()"
+            class="flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-3 text-base font-semibold text-white transition-all hover:bg-emerald-600"
+            @click="menuOpen = false"
+          >
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+            </svg>
+            Dashboard
           </Link>
+          
           <template v-else>
-            <Link :href="login()"
-              class="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]">
-            Log in
+            <Link 
+              :href="login()"
+              class="flex items-center rounded-lg border-2 border-white/20 bg-transparent px-4 py-3 text-base font-semibold text-white transition-all hover:bg-white/10"
+              @click="menuOpen = false"
+            >
+              Log in
             </Link>
-            <!-- <Link v-if="canRegister" :href="register()"
-              class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]">
-            Register
-            </Link> -->
           </template>
         </div>
       </div>
     </div>
-
-    <!-- <div
-        class="flex min-h-screen flex-col items-center bg-white-50 p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">
-        <header class="mb-6 w-full max-w-[335px] text-sm not-has-[nav]:hidden lg:max-w-4xl">
-            <nav class="flex items-center justify-end gap-4">
-
-                <Link v-if="$page.props.auth.user" :href="dashboard()"
-                    class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]">
-                    Dashboard
-                </Link>
-                <template v-else>
-                    <Link :href="login()"
-                        class="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]">
-                        Log in
-                    </Link>
-                    <Link v-if="canRegister" :href="register()"
-                        class="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]">
-                        Register
-                    </Link>
-                </template>
-            </nav>
-        </header>
-    </div> -->
-
   </header>
 </template>
+

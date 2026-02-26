@@ -39,7 +39,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
 ];
 
-// Formatear moneda
+// Formatear moneda a soles
 const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('es-PE', {
         style: 'currency',
@@ -80,7 +80,7 @@ const salesGrowth = computed(() => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-5 p-5">
 
-            <!-- ══ HEADER ═══════════════════════════════════════════════ -->
+            <!-- HEADER -->
             <div class="relative overflow-hidden rounded-[1.1rem] border border-green-400/[0.12] px-7 py-6"
                 style="background: linear-gradient(135deg, #052e16 0%, #14532d 45%, #15803d 100%);">
                 <div class="pointer-events-none absolute inset-0"
@@ -103,7 +103,7 @@ const salesGrowth = computed(() => {
                 </div>
             </div>
 
-            <!-- ══ INDICADORES PRINCIPALES ═══════════════════════════════ -->
+            <!-- INDICADORES PRINCIPALES -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                 
                 <!-- Usuarios -->
@@ -247,7 +247,7 @@ const salesGrowth = computed(() => {
                 </div>
             </div>
 
-            <!-- ══ RESUMEN ADICIONAL ════════════════════════════════════ -->
+            <!-- RESUMEN -->
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 
                 <!-- Ingresos Totales -->
@@ -297,7 +297,7 @@ const salesGrowth = computed(() => {
                 </div>
             </div>
 
-            <!-- ══ ACCESOS RÁPIDOS ═════════════════════════════════════ -->
+            <!-- ACCESOS RÁPIDOS -->
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <a href="/users" class="group flex items-center gap-3 rounded-[10px] border border-border bg-zinc-800/30 p-4 transition-all hover:border-blue-500/30 hover:bg-blue-500/[0.08]">
                     <div class="flex h-10 w-10 items-center justify-center rounded-lg border border-blue-500/25 bg-blue-500/[0.18] text-blue-400 transition-transform group-hover:scale-110">

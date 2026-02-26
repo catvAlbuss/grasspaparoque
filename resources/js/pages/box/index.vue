@@ -62,9 +62,8 @@ const sales = computed(() => props.sales || []);
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Caja', href: './caja' }];
 
-// ============================
+
 // FUNCIONES DE VENTA
-// ============================
 const SaleItems = ref<SaleItem[]>([]);
 const searchQuery = ref<string>('');
 const paymentMethod = ref<string>('cash');
@@ -100,9 +99,8 @@ const updateQuantity = (index: number, newQuantity: number | string) => {
 
 const removeItemSale = (index: number) => SaleItems.value.splice(index, 1);
 
-// ============================
+
 // PAGINACIÓN
-// ============================
 const currentPage = ref(1);
 const itemsPage = 8;
 const paginatedProducts = computed(() => {
@@ -121,9 +119,8 @@ const changePage = (page: number) => {
     if (page >= 1 && page <= totalPages.value) currentPage.value = page;
 };
 
-// ============================
+
 // TOTALES Y MONEDA
-// ============================
 const subTotal = computed(() => SaleItems.value.reduce((s, i) => s + i.total, 0));
 const igv = computed(() => Number(subTotal.value) * 0.18);
 const total = computed(() => Number(subTotal.value) + igv.value);
@@ -144,16 +141,13 @@ const procesSale = async () => {
     });
 };
 
-// ============================
+
 // INDICADORES
-// ============================
 const totalProducts = computed(() => products.value.length);
 const lowStockCount = computed(() => products.value.filter(p => parseInt(p.stock) < 10 && parseInt(p.stock) > 0).length);
 const outOfStockCount = computed(() => products.value.filter(p => parseInt(p.stock) === 0).length);
 
-// ============================
 // FILTROS HISTORIAL
-// ============================
 const historySearch = ref('');
 const historyPaymentFilter = ref('all');
 const historyStateFilter = ref('all');
@@ -181,7 +175,7 @@ const clearHistoryFilters = () => {
     historyPage.value = 1;
 };
 
-// ── Badges de stock (clases completas Tailwind) ─────────────────────────────
+// Badges de stock 
 const getStockBadge = (stock: string) => {
     const num = parseInt(stock);
     if (num === 0) return {
@@ -201,7 +195,7 @@ const getStockBadge = (stock: string) => {
     };
 };
 
-// ── Niveles de precio ───────────────────────────────────────────────────────
+// Niveles de precio 
 const getPrecioClasses = (price: number): string => {
     if (price === 0) return 'inline-flex items-center gap-0.5 rounded-md border border-zinc-700 bg-zinc-800/50 px-2 py-0.5 text-[0.78rem] font-bold text-zinc-400';
     if (price <= 50) return 'inline-flex items-center gap-0.5 rounded-md border border-green-500/20 bg-green-500/[0.09] px-2 py-0.5 text-[0.78rem] font-bold text-green-500';
@@ -209,7 +203,7 @@ const getPrecioClasses = (price: number): string => {
     return 'inline-flex items-center gap-0.5 rounded-md border border-purple-500/25 bg-purple-500/[0.08] px-2 py-0.5 text-[0.78rem] font-bold text-purple-400';
 };
 
-// ── Método de pago badge ────────────────────────────────────────────────────
+// Método de pago 
 const getPaymentBadge = (method: string) => {
     const icons: Record<string, any> = { cash: DollarSign, card: CreditCard, transfer: Smartphone };
     const labels: Record<string, string> = { cash: 'Efectivo', card: 'Tarjeta', transfer: 'Yape/Plin' };
@@ -221,7 +215,7 @@ const getPaymentBadge = (method: string) => {
     return { icon: icons[method] || DollarSign, label: labels[method] || method, class: classes[method] || classes.cash };
 };
 
-// ── Estado de venta badge ───────────────────────────────────────────────────
+// Estado de venta 
 const getStateBadge = (s: string) => s === 'paid'
     ? { label: 'Pagado', class: 'inline-flex items-center gap-1 rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1 text-[0.72rem] font-semibold text-green-500 whitespace-nowrap' }
     : { label: 'Pendiente', class: 'inline-flex items-center gap-1 rounded-full border border-amber-500/25 bg-amber-500/[0.08] px-2.5 py-1 text-[0.72rem] font-semibold text-amber-400 whitespace-nowrap' };
@@ -232,7 +226,7 @@ const getStateBadge = (s: string) => s === 'paid'
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-5 p-5">
 
-            <!-- ══ HERO HEADER ══════════════════════════════════ -->
+            <!-- HEADER -->
             <div class="relative overflow-hidden rounded-[1.1rem] border border-green-400/[0.12] px-7 py-6"
                 style="background: linear-gradient(135deg, #052e16 0%, #14532d 45%, #15803d 100%);">
                 <div class="pointer-events-none absolute inset-0"
@@ -253,7 +247,7 @@ const getStateBadge = (s: string) => s === 'paid'
                     </div>
                 </div>
 
-                <!-- Stats row -->
+                <!-- Calculo por Fila -->
                 <div class="relative flex items-center rounded-[10px] border border-green-400/[0.12] px-4 py-2.5"
                     style="background:rgba(24,24,27,0.50); backdrop-filter:blur(8px);">
                     <div class="flex flex-1 items-center justify-center gap-2">
@@ -298,10 +292,10 @@ const getStateBadge = (s: string) => s === 'paid'
                 </div>
             </div>
 
-            <!-- Layout: Productos + Venta -->
+            <!-- Layout: Productos y Venta -->
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 
-                <!-- ══ PANEL IZQUIERDO: PRODUCTOS ═══════════════ -->
+                <!-- PANEL IZQUIERDO: PRODUCTOS -->
                 <section class="relative overflow-hidden rounded-[1.1rem] border border-border bg-background transition-shadow duration-300 hover:shadow-[0_4px_24px_rgba(22,163,74,0.07)]">
                     <div class="absolute inset-x-0 top-0 h-[2.5px] bg-gradient-to-r from-green-700 via-green-500 to-green-400" />
                     
@@ -405,7 +399,7 @@ const getStateBadge = (s: string) => s === 'paid'
                     </div>
                 </section>
 
-                <!-- ══ PANEL DERECHO: VENTA ACTUAL ═════════════ -->
+                <!-- PANEL DERECHO: VENTA ACTUAL-->
                 <section class="relative overflow-hidden rounded-[1.1rem] border border-border bg-background transition-shadow duration-300 hover:shadow-[0_4px_24px_rgba(22,163,74,0.07)]">
                     <div class="absolute inset-x-0 top-0 h-[2.5px] bg-gradient-to-r from-green-700 via-green-500 to-green-400" />
                     
@@ -436,13 +430,14 @@ const getStateBadge = (s: string) => s === 'paid'
                                 <span class="block text-[0.75rem] text-muted-foreground">{{ formatCurrency(item.price_unit) }} c/u</span>
                             </div>
                             <div class="flex items-center gap-3">
+
                                 <!-- Controles de cantidad -->
                                 <div class="flex items-center gap-1.5">
                                     <button type="button" @click="updateQuantity(idx, item.quantity - 1)"
                                         class="flex h-7 w-7 items-center justify-center rounded-[6px] bg-zinc-700 text-white transition hover:bg-green-600">
                                         <span class="text-lg leading-none">−</span>
                                     </button>
-                                    <input type="number" :value="item.quantity" @input="updateQuantity(idx, $event.target.value)"
+                                    <input type="number" :value="item.quantity" @input="updateQuantity(idx, ($event.target as HTMLInputElement).value)"
                                         class="w-11 h-7 rounded-[6px] border border-zinc-600 bg-zinc-700 px-1 text-center text-[0.9rem] font-semibold text-white outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
                                     <button type="button" @click="updateQuantity(idx, item.quantity + 1)"
                                         class="flex h-7 w-7 items-center justify-center rounded-[6px] bg-zinc-700 text-white transition hover:bg-green-600">
@@ -458,8 +453,9 @@ const getStateBadge = (s: string) => s === 'paid'
                         </div>
                     </div>
 
-                    <!-- Footer: Pago + Totales -->
+                    <!-- Pago y Totales -->
                     <div class="border-t border-border px-6 py-4" style="background:rgba(39,39,42,0.30);">
+                        
                         <!-- Métodos de pago -->
                         <div class="mb-4 flex gap-2">
                             <button type="button" @click="paymentMethod = 'cash'"
@@ -499,7 +495,7 @@ const getStateBadge = (s: string) => s === 'paid'
                 </section>
             </div>
 
-            <!-- ══ HISTORIAL DE VENTAS (DEBAJO) ═══════════════ -->
+            <!--  HISTORIAL DE VENTAS -->
             <section class="relative overflow-hidden rounded-[1.1rem] border border-border bg-background transition-shadow duration-300 hover:shadow-[0_4px_24px_rgba(22,163,74,0.07)]">
                 <div class="absolute inset-x-0 top-0 h-[2.5px] bg-gradient-to-r from-green-700 via-green-500 to-green-400" />
                 
@@ -513,7 +509,7 @@ const getStateBadge = (s: string) => s === 'paid'
                     </div>
                 </div>
 
-                <!-- Stats rápidos -->
+                <!-- Estados rápidos -->
                 <div class="grid grid-cols-3 gap-4 px-6 py-4">
                     <div class="flex items-center gap-3 rounded-[8px] border border-border bg-zinc-800/30 px-4 py-3">
                         <span class="flex h-8 w-8 items-center justify-center rounded-[7px] border border-green-500/25 bg-green-500/[0.18] text-green-400">
@@ -606,6 +602,7 @@ const getStateBadge = (s: string) => s === 'paid'
                                 </th>
                             </tr>
                         </thead>
+
                         <tbody>
                             <tr v-for="sale in paginatedSales" :key="sale.id" class="border-b border-border transition-colors duration-[0.12s] last:border-b-0 hover:bg-zinc-800/30">
                                 <td class="px-4 py-[0.85rem] align-middle">
