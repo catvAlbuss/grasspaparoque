@@ -179,12 +179,12 @@ const historySearch = ref('');
 const historyPaymentFilter = ref('all');
 const historyStateFilter = ref('all');
 const filteredSales = computed(() => sales.value.filter(sale => {
-    const matchSearch = historySearch.value === '' || 
-        sale.sale_number.toLowerCase().includes(historySearch.value.toLowerCase()) ||
-        sale.items.some(i => i.name.toLowerCase().includes(historySearch.value.toLowerCase()));
-    const matchPayment = historyPaymentFilter.value === 'all' || sale.payment_method === historyPaymentFilter.value;
-    const matchState = historyStateFilter.value === 'all' || sale.state === historyStateFilter.value;
-    return matchSearch && matchPayment && matchState;
+const matchSearch = historySearch.value === '' || 
+sale.sale_number.toLowerCase().includes(historySearch.value.toLowerCase()) ||
+sale.items.some(i => i.name.toLowerCase().includes(historySearch.value.toLowerCase()));
+const matchPayment = historyPaymentFilter.value === 'all' || sale.payment_method === historyPaymentFilter.value;
+const matchState = historyStateFilter.value === 'all' || sale.state === historyStateFilter.value;
+return matchSearch && matchPayment && matchState;
 }));
 const historyPage = ref(1);
 const historyPerPage = 10;
@@ -404,7 +404,8 @@ const getStateBadge = (s: string) => s === 'paid'
                                         </span>
                                     </td>
                                     <td class="px-4 py-[0.85rem] align-middle text-right">
-                                        <button class="flex h-8 w-8 items-center justify-center rounded-lg border border-green-500/20 bg-green-500/10 text-green-500 transition-all hover:translate-y-[-2px] hover:border-green-600 hover:bg-green-600 hover:text-white hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)] disabled:cursor-not-allowed disabled:opacity-40"
+                                        <button class="flex h-8 w-8 items-center justify-center rounded-lg border border-green-500/20 bg-green-500/10 text-green-500 transition-all 
+                                        hover:translate-y-[-2px] hover:border-green-600 hover:bg-green-600 hover:text-white hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)] disabled:cursor-not-allowed disabled:opacity-40"
                                             :disabled="parseInt(p.stock) === 0" @click="addToSale(p)" :title="parseInt(p.stock) === 0 ? 'Agotado' : 'Agregar'">
                                             <Plus :size="16" />
                                         </button>
