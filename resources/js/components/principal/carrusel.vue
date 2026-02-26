@@ -4,53 +4,39 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 const images = [
     {
         id: '1',
-        title: 'CÉSPED PREMIUM',
-        subtitle: 'Textura Natural',
-        description: 'Disfruta de la sensación de césped natural con cero mantenimiento.',
+        title: 'PAPAROQUE PRO',
+        subtitle: 'Rendimiento Elite',
+        description: 'Césped sintético de última generación diseñado para competiciones profesionales. Máxima durabilidad y respuesta.',
         src: '/img/cesped-premium.png' 
     },
     {
         id: '2',
-        title: 'ÁREAS RECREATIVAS',
-        subtitle: 'Diversión Segura',
-        description: 'Espacios diseñados para el juego y la recreación familiar.',
-        src: '/img/imagen2.jpg'  
+        title: 'RESISTENCIA ',
+        subtitle: 'Tecnología Avanzada',
+        description: 'Tratamiento especial anti-UV que mantiene el color y la textura intactos ante la exposición solar intensa.',
+        src: '/img/areas-recreativas.png'  
     },
     {
         id: '3',
-        title: 'CANCHAS DEPORTIVAS',
-        subtitle: 'Rendimiento Pro',
-        description: 'Superficie de última generación para deportes de alto rendimiento.',
-        src: '/img/imagen3.jpg'  
+        title: 'DRENAJE PERFECTO',
+        subtitle: 'Juego Sin Pausas',
+        description: 'Sistema de drenaje de alta capacidad que elimina el agua rápidamente, permitiendo jugar incluso después de lluvia.',
+        src: '/img/canchas_deportivas.png'  
     },
     {
-        id: '4',
-        title: 'ESPACIOS COMERCIALES',
-        subtitle: 'Elegancia',
-        description: 'Realza la imagen de tu negocio con áreas verdes siempre perfectas.',
-        src: '/img/imagen4.jpg'  
-    },
-    {
-        id: '5',
-        title: 'AZOTEAS VERDES',
-        subtitle: 'Naturaleza Urbana',
-        description: 'Transforma tus espacios exteriores en oasis ecológicos.',
-        src: '/img/imagen5.jpg'  
-    },
-    {
-        id: '6',
-        title: 'PAISAJISMO',
-        subtitle: 'Diseño Único',
-        description: 'Creamos entornos únicos combinando césped sintético con elementos naturales.',
-        src: '/img/imagen6.jpg'  
+        id: '4',  // Cambiado de '5' a '4'
+        title: 'CUMPLEAÑOS Y EVENTOS',
+        subtitle: 'Celebraciones',
+        description: 'Celebra tus eventos especiales en un ambiente único al aire libre.',
+        src: '/img/eventos.png'
     }
 ]
 
 const rotation = ref(0)
-const totalImages = images.length
+const totalImages = images.length // Ahora es 4
 const isTransitioning = ref(false)
 
-// Calcular ángulos para cada imagen
+// Calcular ángulos para cada imagen (360/4 = 90 grados por imagen)
 const getImageStyle = (index) => {
     const angle = (index * (360 / totalImages) + rotation.value) % 360
     const radian = (angle * Math.PI) / 180
@@ -59,12 +45,11 @@ const getImageStyle = (index) => {
     const radius = 500
     
     // Calcular posición en 3D
-    const x = Math.sin(radian) * radius
     const z = Math.cos(radian) * radius
     
     // Determinar posición
-    const isFront = Math.abs(angle) < 60 || Math.abs(angle - 360) < 60
-    const isBack = Math.abs(angle - 180) < 60
+    const isFront = Math.abs(angle) < 45 || Math.abs(angle - 360) < 45
+    const isBack = Math.abs(angle - 180) < 45
     
     // Escala y opacidad
     let scale = 1
@@ -103,14 +88,14 @@ const getImageStyle = (index) => {
 const nextImage = () => {
     if (isTransitioning.value) return
     isTransitioning.value = true
-    rotation.value = (rotation.value + 60) % 360
+    rotation.value = (rotation.value + 90) % 360
     setTimeout(() => isTransitioning.value = false, 800)
 }
 
 const prevImage = () => {
     if (isTransitioning.value) return
     isTransitioning.value = true
-    rotation.value = (rotation.value - 60 + 360) % 360
+    rotation.value = (rotation.value - 90 + 360) % 360
     setTimeout(() => isTransitioning.value = false, 800)
 }
 
@@ -156,19 +141,18 @@ onUnmounted(() => {
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-black/40 backdrop-blur-[2px]"></div>
         </div>
 
-        <!-- Título - AHORA MUY ARRIBA Y PEQUEÑO -->
-        <div class="relative pt-4 text-center z-10"> <!-- Reducido pt-8 a pt-4 -->
-            <h2 class="text-3xl md:text-4xl font-bold"> <!-- Reducido de 4xl/5xl a 3xl/4xl -->
+        <!-- Título -->
+        <div class="relative pt-4 text-center z-10">
+            <h2 class="text-3xl md:text-4xl font-bold">
                 <span class="bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-emerald-300 to-green-400 drop-shadow-lg">
-                    Galería GrassPaparoque
+                     Galería GrassPaparoque
                 </span>
             </h2>
-            <div class="w-24 h-0.5 bg-gradient-to-r from-green-500/50 to-emerald-500/50 mx-auto rounded-full my-2"></div> <!-- Reducido h-1 a h-0.5 y my-3 a my-2 -->
-        
+            <div class="w-24 h-0.5 bg-gradient-to-r from-green-500/50 to-emerald-500/50 mx-auto rounded-full my-2"></div>
         </div>
 
-        <!-- Contenedor principal - MÁS ESPACIO PARA LAS IMÁGENES -->
-        <div class="relative flex items-center justify-center" style="height: calc(100vh - 10px); perspective: 1200px; margin-top: -0px;"> <!-- Ajustado altura y margen negativo -->
+        <!-- Contenedor principal -->
+        <div class="relative flex items-center justify-center" style="height: calc(100vh - 10px); perspective: 1200px; margin-top: -0px;">
             <!-- Carrusel 3D -->
             <div class="relative" style="transform-style: preserve-3d; width: 100%; height: 100%;">
                 <div v-for="(image, index) in images" 
@@ -231,16 +215,16 @@ onUnmounted(() => {
             </button>
         </div>
 
-        <!-- Miniaturas -->
-        <div class="relative pb-2 flex justify-center gap-3 z-10"> <!-- Reducido pb-4 a pb-2 -->
+        <!-- Miniaturas (actualizadas para 4 imágenes) -->
+        <div class="relative pb-2 flex justify-center gap-3 z-10">
             <div v-for="(image, index) in images" 
                  :key="image.id"
-                 @click="rotation = (index * 60) % 360"
+                 @click="rotation = (index * 90) % 360"
                  class="relative group/thumb cursor-pointer transition-all duration-300"
-                 :class="index * 60 === rotation % 360 ? 'scale-110 z-10' : 'opacity-50 hover:opacity-100'">
+                 :class="index * 90 === rotation % 360 ? 'scale-110 z-10' : 'opacity-50 hover:opacity-100'">
                 
                 <div class="w-14 h-10 rounded-md overflow-hidden border-2"
-                     :class="index * 60 === rotation % 360 ? 'border-green-500 shadow-md shadow-green-500/30' : 'border-transparent'">
+                     :class="index * 90 === rotation % 360 ? 'border-green-500 shadow-md shadow-green-500/30' : 'border-transparent'">
                     <img :src="image.src" 
                          :alt="image.title"
                          class="w-full h-full object-cover brightness-75">
@@ -293,7 +277,7 @@ onUnmounted(() => {
 }
 
 @media (max-width: 768px) {
-    .w-\[500px\] {
+    .w-\[600px\] {
         width: 320px;
     }
     .h-\[300px\] {
