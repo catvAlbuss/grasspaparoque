@@ -17,7 +17,12 @@ import ChatbotReservas from '@/components/principal/chatbot-reservas.vue';
     <Calendar />
     <Services1 />
     <Carrusel />
+<<<<<<< Updated upstream
     <Form1 :reservations="[]" :eventos="[]" />
     <ChatbotReservas />
+=======
+    
+    <Form1 :reservations="reservations" :eventos="eventos"/>
+>>>>>>> Stashed changes
 
 </template>
