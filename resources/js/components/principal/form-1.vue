@@ -145,10 +145,10 @@ const validarFormulario = () => {
 // ENVIAR DATOS DEL FORMULARIO AL BACKEND
 const submit = (): void => {
 
-    if (!validarFormulario()) {
-        alert('Por favor, corrija los errores.');
-        return;
-    }
+    // if (!validarFormulario()) {
+    //     alert('Por favor, corrija los errores.');
+    //     return;
+    // }
     console.log('Datos del formulario:', formData);
 
     formData.post('/reservations/customers', {

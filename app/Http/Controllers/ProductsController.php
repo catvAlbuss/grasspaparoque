@@ -39,9 +39,9 @@ class ProductsController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:255'],
-            'stock' => ['required','string', 'max:255'],
-            'price_unit' => ['required', 'string'],
-            'price_higher' => ['required', 'string'],
+            'stock' => ['required', 'integer', 'min:0'],
+            'price_unit' => ['required', 'numeric', 'min:0'],
+            'price_higher' => ['required', 'numeric', 'min:0'],
             'expiration_date' => ['required', 'string'],
         ]);
 

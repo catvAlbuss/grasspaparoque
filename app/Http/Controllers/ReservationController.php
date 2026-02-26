@@ -126,8 +126,8 @@ class ReservationController extends Controller
 
         $reservation = Reservation::create([
             'id_evento' => $request->id_evento,
-            // 'id_user' => auth()->id(),
-            // 'id_pay' => null, // Aquí puedes asignar un valor predeterminado o manejarlo según tu lógica
+            'id_user' => auth()->id(),
+            'id_pay' => null, // Aquí puedes asignar un valor predeterminado o manejarlo según tu lógica
             'id_customer' => $customer->id,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,

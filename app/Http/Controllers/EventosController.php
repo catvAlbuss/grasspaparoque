@@ -38,23 +38,23 @@ class EventosController extends Controller
      */
     public function store(Request $request)
     {
-        $validate = $request->validate([
+        // $validate = $request->validate([
 
-            'name' => ['required', 'string', 'max:250'],
-            'lastname' => ['required', 'string', 'max:250'],
-            'email' => ['required', 'string', 'max:1000'],
-            'phone' => ['required', 'number', 'max:9'],
-            'type_reservation' => ['required', 'string', 'max:250'],
-            'date'=> ['required', 'date'],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
-        ]);
+        //     'name' => ['required', 'string', 'max:250'],
+        //     'lastname' => ['required', 'string', 'max:250'],
+        //     'email' => ['required', 'string', 'max:1000'],
+        //     'phone' => ['required', 'number', 'max:9'],
+        //     'type_reservation' => ['required', 'string', 'max:250'],
+        //     'date'=> ['required', 'date'],
+        //     'start_time' => ['required', 'date_format:H:i'],
+        //     'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+        // ]);
 
         Eventos::create([
-            'nombre' => $validate['name'],
-            'precio' => $validate['precio'],
-            'descripcion' => $validate['descripcion'] ?? null,
-            'estado' => $validate['estado'],
+            'nombre' => $request->input('nombre'),
+            'precio' => $request->input('precio'),
+            'descripcion' => $request->input('descripcion') ?? null,
+            'estado' => $request->input('estado'),
         ]);
 
         // $events->syncRoles([$validate['role']]);
