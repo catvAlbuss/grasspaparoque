@@ -66,15 +66,14 @@ class ReservationController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'lastname' => ['nullable', 'string', 'max:255'],
-            'dni' => ['nullable', 'regex:/^\d{8}$/'],
+        
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
             'id_evento' => ['required', 'integer', Rule::exists('eventos', 'id')],
             'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
-            'payment_proof_number' => ['nullable', 'integer', 'min:1'],
-            'payment_proof_file' => ['nullable', 'file', 'image', 'max:5120'],
+           
         ]);
 
         [$customerName, $customerLastname] = $this->normalizeCustomerName(
@@ -87,7 +86,8 @@ class ReservationController extends Controller
             $safePhone = preg_replace('/\D+/', '', $validated['phone']);
             $email = 'reserva_' . ($safePhone ?: time()) . '@local.test';
         }
-
+        $id_customer=null;
+        
         $reservation = DB::transaction(function () use ($validated, $request, $customerName, $customerLastname, $email) {
             $hasConflict = Reservation::query()
                 ->where('id_evento', $validated['id_evento'])
@@ -106,10 +106,11 @@ class ReservationController extends Controller
             $customer = Customer::create([
                 'name' => $customerName,
                 'lastname' => $customerLastname,
-                'dni' => $validated['dni'] ?? null,
                 'email' => $email,
                 'phone' => $validated['phone'],
             ]);
+
+            $id_customer = $customer->id;
 
             $storedProofName = null;
             if ($request->hasFile('payment_proof_file')) {
@@ -125,16 +126,14 @@ class ReservationController extends Controller
                 'end_time' => $validated['end_time'],
                 'date' => $validated['date'],
                 'reservation_status' => 'free',
-                'payment_status' => 'pending',
-                'payment_proof_name' => $storedProofName,
-                'payment_proof_number' => $validated['payment_proof_number'] ?? null,
+                
             ]);
         });
 
-        return response()->json([
-            'message' => 'Reserva completada',
-            'data' => $reservation,
-        ], 201);
+       // return response()->json([
+           // 'message' => 'Reserva completada',
+          //  'data' => $reservation,
+      //  ], 201);
     }
 
     /**

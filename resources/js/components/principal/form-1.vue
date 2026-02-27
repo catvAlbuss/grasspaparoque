@@ -130,14 +130,14 @@ const validarFormulario = () => {
         end_time: '',
     };
 
-    if (!formData.name) errores.value.name = 'El nombre es obligatorio';
-    if (!formData.lastname) errores.value.lastname = 'El apellido es obligatorio';
-    if (!formData.email) errores.value.email = 'El correo es obligatorio';
-    if (!formData.phone) errores.value.phone = 'El número es obligatorio';
-    if (!formData.id_evento) errores.value.id_evento = 'El tipo de evento es obligatorio';
-    if (!formData.date) errores.value.date = 'La fecha es obligatorio';
-    if (!formData.start_time) errores.value.start_time = 'La hora de inicio es obligatorio';
-    if (!formData.end_time) errores.value.end_time = 'La hora de fin es obligatorio';
+    // if (!formData.name) errores.value.name = 'El nombre es obligatorio';
+    // if (!formData.lastname) errores.value.lastname = 'El apellido es obligatorio';
+    // if (!formData.email) errores.value.email = 'El correo es obligatorio';
+    // if (!formData.phone) errores.value.phone = 'El número es obligatorio';
+    // if (!formData.id_evento) errores.value.id_evento = 'El tipo de evento es obligatorio';
+    // if (!formData.date) errores.value.date = 'La fecha es obligatorio';
+    // if (!formData.start_time) errores.value.start_time = 'La hora de inicio es obligatorio';
+    // if (!formData.end_time) errores.value.end_time = 'La hora de fin es obligatorio';
 
     return Object.keys(errores.value).length === 0;
 }
@@ -145,10 +145,10 @@ const validarFormulario = () => {
 // ENVIAR DATOS DEL FORMULARIO AL BACKEND
 const submit = (): void => {
 
-    if (!validarFormulario()) {
-        alert('Por favor, corrija los errores.');
-        return;
-    }
+    // if (!validarFormulario()) {
+    //     alert('Por favor, corrija los errores.');
+    //     return;
+    // }
     console.log('Datos del formulario:', formData);
 
     formData.post('/reservations/customers', {
@@ -180,7 +180,7 @@ const submit = (): void => {
                     <div class="flex justify-center items-center">
                         <button type="submit"
                             class="border-white border-[2px] px-2 py-2 rounded-xl hover:bg-white hover:text-black hover:scale-110 lg:w-[30%] lg:h-[50%] md:text-lg">
-                            {{ isEditing ? 'Actualizar' : 'Reservar' }}
+                            Reservar
                         </button>
                     </div>
                 </div>

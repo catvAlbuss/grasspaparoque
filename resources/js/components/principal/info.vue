@@ -1,33 +1,30 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 
 const slides = [
     {
         id: 1,
-        title: 'Servicios que impulsan tu crecimiento',
-        description: 'Estrategia, desarrollo y automatización en un solo equipo.',
+        title: 'Tu Polideportivo y Eventos en un solo lugar',
+        description: 'Siente la pasión en cada partido y en cada celebracion.',
         cta: 'Ver servicios',
         href: '#services',
-        image:
-            'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1600&auto=format&fit=crop',
+        image: 'https://i.ibb.co/LzwLvYP3/foto1.avif',
     },
     {
         id: 2,
-        title: 'Conversemos sobre tu proyecto',
-        description: 'Agenda una llamada o déjanos un mensaje para iniciar.',
+        title: 'Recreacion, Diversion y Eventos sin Complicaciones',
+        description: 'Agenda una llamada o déjanos un mensaje para iniciar tu reserva.',
         cta: 'Ir a contacto',
         href: '#contact',
-        image:
-            'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1600&auto=format&fit=crop',
+        image: 'https://i.ibb.co/kV3WJ8PG/foto2.jpg',
     },
     {
         id: 3,
-        title: 'Soporte que responde a tiempo',
-        description: 'Nuestro bot puede ayudarte a reservar en segundos.',
+        title: 'Nuestros espacios y nuestro Asistente Virtual a tu servicio',
+        description: 'Nuestro Asistente Virtual te ayuda a reservar en segundos.',
         cta: 'Reservar ahora',
         href: '#contact',
-        image:
-            'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1600&auto=format&fit=crop',
+        image: 'https://i.ibb.co/CpmT1nKg/grass1.jpg',
     },
 ]
 

@@ -24,7 +24,7 @@ const images = [
         src: '/img/canchas_deportivas.png'  
     },
     {
-        id: '4',  // Cambiado de '5' a '4'
+        id: '4', 
         title: 'CUMPLEAÑOS Y EVENTOS',
         subtitle: 'Celebraciones',
         description: 'Celebra tus eventos especiales en un ambiente único al aire libre.',
@@ -33,10 +33,10 @@ const images = [
 ]
 
 const rotation = ref(0)
-const totalImages = images.length // Ahora es 4
+const totalImages = images.length 
 const isTransitioning = ref(false)
 
-// Calcular ángulos para cada imagen (360/4 = 90 grados por imagen)
+// Calcular ángulos para cada imagen 
 const getImageStyle = (index) => {
     const angle = (index * (360 / totalImages) + rotation.value) % 360
     const radian = (angle * Math.PI) / 180
