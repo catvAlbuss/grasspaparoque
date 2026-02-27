@@ -41,6 +41,12 @@ const mainNavItems = computed<NavItem[]>(() => {
         href: users.index.url(),
         icon: Users2,
     },
+     
+    {
+        title: 'reservations',
+        href: reservations.index.url(),
+        icon: Users2,
+    },
     {
         title: 'eventos',
         href: eventos.index.url(),
@@ -57,6 +63,7 @@ const mainNavItems = computed<NavItem[]>(() => {
         icon: LayoutGrid,
     },
     ];
+
 
     if (canManageReservations.value) {
         baseItems.push({
@@ -108,3 +115,4 @@ const footerNavItems: NavItem[] = [
     </Sidebar>
     <slot />
 </template>
+
