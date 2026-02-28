@@ -1,261 +1,287 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const images = [
     {
         id: '1',
-        title: 'imagen 1',
-        src: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+        title: 'PAPAROQUE PRO',
+        subtitle: 'Rendimiento Elite',
+        description: 'Césped sintético de última generación diseñado para competiciones profesionales. Máxima durabilidad y respuesta.',
+        src: '/img/cesped-premium.png' 
     },
     {
         id: '2',
-        title: 'imagen 2',
-        src: 'https://images.unsplash.com/photo-1439792675105-701e6a4ab6f0?q=80&w=1173&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+        title: 'RESISTENCIA ',
+        subtitle: 'Tecnología Avanzada',
+        description: 'Tratamiento especial anti-UV que mantiene el color y la textura intactos ante la exposición solar intensa.',
+        src: '/img/areas-recreativas.png'  
     },
     {
         id: '3',
-        title: 'imagen 3',
-        src: 'https://images.unsplash.com/photo-1483982258113-b72862e6cff6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+        title: 'DRENAJE PERFECTO',
+        subtitle: 'Juego Sin Pausas',
+        description: 'Sistema de drenaje de alta capacidad que elimina el agua rápidamente, permitiendo jugar incluso después de lluvia.',
+        src: '/img/canchas_deportivas.png'  
     },
     {
-        id: '4',
-        title: 'imagen 4',
-        src: 'https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+        id: '4', 
+        title: 'CUMPLEAÑOS Y EVENTOS',
+        subtitle: 'Celebraciones',
+        description: 'Celebra tus eventos especiales en un ambiente único al aire libre.',
+        src: '/img/eventos.png'
     }
-
 ]
 
-const current = ref(0)
-const total = images.length
+const rotation = ref(0)
+const totalImages = images.length 
+const isTransitioning = ref(false)
 
-console.log('curren: ' + current)
-
-const activeImage = computed(() => images[current.value])
-
-const prev = () => {
-    current.value = (current.value + 1) % total
-    let items = document.querySelectorAll(".item");
-    document.querySelector(".slide").prepend(items[items.length - 1]);
+// Calcular ángulos para cada imagen 
+const getImageStyle = (index) => {
+    const angle = (index * (360 / totalImages) + rotation.value) % 360
+    const radian = (angle * Math.PI) / 180
+    
+    // Radio del círculo
+    const radius = 500
+    
+    // Calcular posición en 3D
+    const z = Math.cos(radian) * radius
+    
+    // Determinar posición
+    const isFront = Math.abs(angle) < 45 || Math.abs(angle - 360) < 45
+    const isBack = Math.abs(angle - 180) < 45
+    
+    // Escala y opacidad
+    let scale = 1
+    let opacity = 1
+    let brightness = 1
+    let zIndex = 50
+    
+    if (isFront) {
+        scale = 1.2
+        brightness = 1.1
+        opacity = 1
+        zIndex = 100
+    } else if (isBack) {
+        scale = 0.7
+        opacity = 0.4
+        brightness = 0.5
+        zIndex = 10
+    } else {
+        scale = 0.9
+        opacity = 0.8
+        brightness = 0.8
+        zIndex = 50
+    }
+    
+    return {
+        transform: `translateX(-50%) translateY(-50%) translateZ(${z}px) rotateY(${angle}deg) scale(${scale})`,
+        opacity,
+        filter: `brightness(${brightness})`,
+        zIndex,
+        left: '50%',
+        top: '50%',
+        position: 'absolute'
+    }
 }
 
-const next = () => {
-    current.value = (current.value - 1 + total) % total
-    let items = document.querySelectorAll(".item");
-    document.querySelector(".slide").appendChild(items[0]);
+const nextImage = () => {
+    if (isTransitioning.value) return
+    isTransitioning.value = true
+    rotation.value = (rotation.value + 90) % 360
+    setTimeout(() => isTransitioning.value = false, 800)
 }
 
+const prevImage = () => {
+    if (isTransitioning.value) return
+    isTransitioning.value = true
+    rotation.value = (rotation.value - 90 + 360) % 360
+    setTimeout(() => isTransitioning.value = false, 800)
+}
+
+// Autoplay
+const isAutoPlaying = ref(true)
+const autoPlayInterval = ref(null)
+
+const startAutoPlay = () => {
+    stopAutoPlay()
+    autoPlayInterval.value = setInterval(() => {
+        if (!isTransitioning.value) nextImage()
+    }, 4000)
+}
+
+const stopAutoPlay = () => {
+    if (autoPlayInterval.value) {
+        clearInterval(autoPlayInterval.value)
+        autoPlayInterval.value = null
+    }
+}
+
+const toggleAutoPlay = () => {
+    isAutoPlaying.value = !isAutoPlaying.value
+    if (isAutoPlaying.value) startAutoPlay()
+    else stopAutoPlay()
+}
+
+onMounted(() => {
+    if (isAutoPlaying.value) startAutoPlay()
+})
+
+onUnmounted(() => {
+    stopAutoPlay()
+})
 </script>
 
 <template>
-    <section id="Galeria" class="relative flex min-h-128">
-        <div class="contenedor">
-            <div class="text-black">
-                <h2 class="text-black-500">Galería de imágenes</h2>
+    <section class="w-full bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 overflow-hidden" style="min-height: 100vh;">
+        <!-- Efectos de fondo -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-green-900/20 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-900/20 rounded-full blur-3xl"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-black/40 backdrop-blur-[2px]"></div>
+        </div>
+
+        <!-- Título -->
+        <div class="relative pt-4 text-center z-10">
+            <h2 class="text-3xl md:text-4xl font-bold">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-emerald-300 to-green-400 drop-shadow-lg">
+                     Galería GrassPaparoque
+                </span>
+            </h2>
+            <div class="w-24 h-0.5 bg-gradient-to-r from-green-500/50 to-emerald-500/50 mx-auto rounded-full my-2"></div>
+        </div>
+
+        <!-- Contenedor principal -->
+        <div class="relative flex items-center justify-center" style="height: calc(100vh - 10px); perspective: 1200px; margin-top: -0px;">
+            <!-- Carrusel 3D -->
+            <div class="relative" style="transform-style: preserve-3d; width: 100%; height: 100%;">
+                <div v-for="(image, index) in images" 
+                     :key="image.id"
+                     class="absolute transition-all duration-700 cursor-pointer"
+                     :style="getImageStyle(index)">
+                    
+                    <!-- Tarjeta de imagen -->
+                    <div class="relative group">
+                        <div class="relative overflow-hidden rounded-xl shadow-xl shadow-black/70"
+                             :class="{ 'shadow-lg shadow-green-500/20': index === 0 }">
+                            
+                            <img :src="image.src" 
+                                 :alt="image.title"
+                                 class="w-[600px] h-[300px] object-cover transition-transform duration-700 group-hover:scale-110 brightness-90 group-hover:brightness-100">
+                            
+                            <!-- Overlay -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
+                            
+                            <!-- Número -->
+                            <div class="absolute top-4 left-4">
+                                <span class="text-5xl font-black text-green-500/30 group-hover:text-green-500/50 transition-all">
+                                    {{ image.id }}
+                                </span>
+                            </div>
+                            
+                            <!-- Info hover -->
+                            <div class="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                                <div class="bg-black/80 backdrop-blur-xl p-3 rounded-lg border border-green-500/30">
+                                    <span class="text-xs uppercase tracking-wider text-green-400">{{ image.subtitle }}</span>
+                                    <h3 class="text-base font-bold text-green-300">{{ image.title }}</h3>
+                                    <p class="text-xs text-gray-300 mt-1 line-clamp-2">{{ image.description }}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Indicador -->
+                            <div v-if="index === 0" 
+                                 class="absolute top-4 right-4 w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-md shadow-green-500/40">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="slide">
-                <!-- <img :src="activeImage.src" :alt="activeImage.title" > 
-                 <div class="item" :style="{backgroundImage: `url(${activeImage.src})`}">     
-                </div> 
-                <div class="item" v-for="(imagen, index) in images" :key="imagen.id" :style="{backgroundImage: `url(${imagen.src})`}">
-                </div>-->
-                <div class="item"
-                    style="background-image: url('https://scontent-lim1-1.xx.fbcdn.net/v/t39.30808-6/480691324_1244735060992850_7163497321851888994_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=86c6b0&_nc_eui2=AeEbPpeXCCXzx2YkkUBsGwl0cPIYc3GuN-1w8hhzca437bOH_Vn2XqZDJ53R6-27YdkE9WwJjrm3XcRPC_lG6JDK&_nc_ohc=ZQN7Rio4v3kQ7kNvwEXXmLL&_nc_oc=AdnLGVr2Q72YublCTWvP_qHXp8W7wCz4l3SW2xtXuqp2Hvp-bAYbreMWLcZSjSoltNIILPuAQ_reenEtuXQ53R9K&_nc_zt=23&_nc_ht=scontent-lim1-1.xx&_nc_gid=gPySXnlBNKBUxYPMexnz3Q&oh=00_AfsYikBo-QKuIMAT971gOm_S0kheNs9PNCh-5s1_UWA0lw&oe=6991A7CA');">
+
+            <!-- Navegación -->
+            <button @click="prevImage" 
+                    class="absolute left-4 top-1/2 -translate-y-1/2 z-[200] w-14 h-14 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center text-green-400 hover:bg-black/70 
+                    transition-all border border-green-500/30 hover:scale-110">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            
+            <button @click="nextImage" 
+                    class="absolute right-4 top-1/2 -translate-y-1/2 z-[200] w-14 h-14 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center text-green-400 hover:bg-black/70 
+                    transition-all border border-green-500/30 hover:scale-110">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Miniaturas (actualizadas para 4 imágenes) -->
+        <div class="relative pb-2 flex justify-center gap-3 z-10">
+            <div v-for="(image, index) in images" 
+                 :key="image.id"
+                 @click="rotation = (index * 90) % 360"
+                 class="relative group/thumb cursor-pointer transition-all duration-300"
+                 :class="index * 90 === rotation % 360 ? 'scale-110 z-10' : 'opacity-50 hover:opacity-100'">
+                
+                <div class="w-14 h-10 rounded-md overflow-hidden border-2"
+                     :class="index * 90 === rotation % 360 ? 'border-green-500 shadow-md shadow-green-500/30' : 'border-transparent'">
+                    <img :src="image.src" 
+                         :alt="image.title"
+                         class="w-full h-full object-cover brightness-75">
                 </div>
-                <div class="item"
-                    style="background-image: url('https://scontent-lim1-1.xx.fbcdn.net/v/t39.30808-6/511006620_30036855455962802_6050749190109138726_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHJziertc4n_ZtdmpraD3dc21PYS1jm8ITbU9hLWObwhKucMktUYwsXeOpbU-AR1txgkRfoSrGXIKY5of66SJOz&_nc_ohc=_UGA9MUat-UQ7kNvwGKej6u&_nc_oc=AdnIuKSOJpLyexsjH3iQqN423a-T1ykSoMf_FZCb3WcAXaDPFpTnCN790Nk-WuzWDANe0A1hc3-VWU0gwhyEguTY&_nc_zt=23&_nc_ht=scontent-lim1-1.xx&_nc_gid=tmWNp9ADb0i9gUS7-Pqybg&oh=00_AfudXAv0zp2YhbVTzjtQ2ERCAhCfKYyXE6l-5GPshNczAw&oe=6991A566');">
+                
+                <!-- Tooltip -->
+                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-black/80 text-green-400 text-xs px-2 py-1 rounded opacity-0 group-hover/thumb:opacity-100 transition-all whitespace-nowrap">
+                    {{ image.title }}
                 </div>
-                <div class="item"
-                    style="background-image: url('https://scontent-lim1-1.xx.fbcdn.net/v/t39.30808-6/511010785_30036855539296127_2736308905083674384_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGQ__a6RFdCqATGazBoFUG3Z9rmsCoassln2uawKhqyyRtkM6lrdVk9V4I-_BT4iE-1vHBc1o9MfVOLH8kcInIJ&_nc_ohc=e30GDEMLhGoQ7kNvwEEngMU&_nc_oc=AdknT7aIzuFpcLHP9xA3mfZb96DCdG3n6W0AeMI1thBi7y8AF2EBoKb5lTf7ScnTX4hMieVbmFKTSG4ODA5jY8x7&_nc_zt=23&_nc_ht=scontent-lim1-1.xx&_nc_gid=Ree0iVtSyS7WtSQAt11sxQ&oh=00_AftrZgwkiDyo_LzXBKgMntP8D2Kw7IkXx-ZkKata-zEIvA&oe=6991B8E1');">
-                </div>
-                <div class="item"
-                    style="background-image: url('https://scontent-lim1-1.xx.fbcdn.net/v/t39.30808-6/511108269_30036855845962763_1450649314463257455_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHv-nsKtgm2LGj_9Ty9ekQQtopie76pH1e2imJ7vqkfV6dWdqOERazTi2v0Ebsy-X7f9nX5g1uY27o9j-opg1g2&_nc_ohc=7akua31Bh5cQ7kNvwH8SVSR&_nc_oc=AdkFQ5vxR0qcZeHXRcJgDY0_yt_Vo6nGcr3LI-2cLVESaqHEKMpYLJ5L3u3E8Gi9HaAnbX4s9uJF-OCnDxOQmRgS&_nc_zt=23&_nc_ht=scontent-lim1-1.xx&_nc_gid=4MA-6akI1PrYNzS2pX_syA&oh=00_AftO2uitkg3MY3e8Sdzcv8Wvup2vP34_cBquL_gPGzvOzA&oe=6991B3D9');">
-                </div>
-            </div>
-            <div class="button">
-                <button class="prev" @click="prev">◁</button>
-                <button class="next" @click="next">▷</button>
             </div>
         </div>
 
+        <!-- Autoplay -->
+        <div class="absolute bottom-4 right-4 z-50">
+            <button @click="toggleAutoPlay" 
+                    class="w-10 h-10 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center text-green-400 hover:bg-black/70 transition-all border border-green-500/30">
+                <svg v-if="isAutoPlaying" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </button>
+        </div>
     </section>
 </template>
 
 <style scoped>
-.contenedor {
-    /* display: flex; */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    height: 400px;
-    background: #f5f5f5;
-    /* box-shadow: 0 30px 50px #dbdbdb; */
-    border-radius: 20px;
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.contenedor .slide {
-    /* display: flex; */
-    border-radius: 20px;
-    justify-content: center;
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
-.contenedor .slide .item {
-    width: 200px;
-    height: 250px;
-    position: absolute;
-    top: 50%;
-    transform: translate(0, -50%);
-    border-radius: 20px;
-    box-shadow: 0 30px 50px #505050;
-    background-position: 50% 50%;
-    background-size: cover;
-    display: inline-block;
-    transition: all 0.5s;
+.animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
 }
 
-.slide .item:nth-child(1),
-.slide .item:nth-child(2) {
-    top: 0;
-    left: 0;
-    transform: translate(0, 0);
-    border-radius: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 20px;
-    transition: all .5s;
+[style*="transform-style: preserve-3d"] {
+    transform-style: preserve-3d;
 }
 
-.slide .item:nth-child(3) {
-    left: 50%;
+.backdrop-blur-md {
+    backdrop-filter: blur(12px);
 }
 
-.slide .item:nth-child(4) {
-    left: calc(50% + 220px);
-}
-
-/* .slide .item:nth-child(5) {
-    left: calc(50% + 440px);
-} */
-
-.slide .item:nth-child(n + 5) {
-    left: calc(50% + 440px);
-    opacity: 0;
-}
-
-.item .content {
-    position: absolute;
-    top: 50%;
-    left: 100px;
-    width: 300px;
-    text-align: left;
-    color: #eee;
-    transform: translate(0, -50%);
-    font-family: system-ui;
-    display: none;
-}
-
-.slide .item:nth-child(2) .content {
-    display: block;
-}
-
-.content .name {
-    font-size: 40px;
-    text-transform: uppercase;
-    font-weight: bold;
-    opacity: 0;
-    animation: animate 1s ease-in-out 1 forwards;
-}
-
-.content .des {
-    margin-top: 10px;
-    margin-bottom: 20px;
-    opacity: 0;
-    animation: animate 1s ease-in-out 0.3s 1 forwards;
-}
-
-@keyframes animate {
-    from {
-        opacity: 0;
-        transform: translate(0, 100px);
-        filter: blur(33px);
+@media (max-width: 768px) {
+    .w-\[600px\] {
+        width: 320px;
     }
-
-    to {
-        opacity: 1;
-        transform: translate(0);
-        filter: blur(0);
-    }
-}
-
-.button {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    /* left: 45%;
-    right: 50%; */
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    position: absolute;
-    bottom: 20px;
-}
-
-.button button {
-    width: 40px;
-    height: 35px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    margin: 0 5px;
-    border: 2px solid #000000bd;
-    transition: 0.3s;
-    background: rgba(255, 255, 255, 0.578);
-}
-
-.button button:hover {
-    color: #000000;
-    border: 2px solid #ffffffbd;
-    transform: scale(1.1);
-}
-
-.button button:focus {
-    transform: scale(1.1);
-    background: #ffffff;
-    border: 2px solid #ffffffbd;
-}
-
-.button button:active {
-    transform: scale(1.02);
-}
-
-.next {
-    padding: 0 0 0 3px;
-}
-
-.prev {
-    padding: 0 3px 0 0;
-}
-
-@media screen and (max-width: 768px) {
-
-    .slide .item:nth-child(1),
-    .slide .item:nth-child(2) {
-        top: 0;
-        left: 0;
-        transform: translate(0, 0);
-        width: 100%;
-        height: 100%;
-        border-radius: 16px;
-        transition: all .4s;
-    }
-
-    /* las imágenes laterales ocultas */
-    .slide .item:nth-child(n + 3) {
-        display: none !important;
-        opacity: 0;
-        visibility: hidden;
+    .h-\[300px\] {
+        height: 190px;
     }
 }
 </style>

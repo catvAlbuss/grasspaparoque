@@ -130,14 +130,14 @@ const validarFormulario = () => {
         end_time: '',
     };
 
-    if (!formData.name) errores.value.name = 'El nombre es obligatorio';
-    if (!formData.lastname) errores.value.lastname = 'El apellido es obligatorio';
-    if (!formData.email) errores.value.email = 'El correo es obligatorio';
-    if (!formData.phone) errores.value.phone = 'El número es obligatorio';
-    if (!formData.id_evento) errores.value.id_evento = 'El tipo de evento es obligatorio';
-    if (!formData.date) errores.value.date = 'La fecha es obligatorio';
-    if (!formData.start_time) errores.value.start_time = 'La hora de inicio es obligatorio';
-    if (!formData.end_time) errores.value.end_time = 'La hora de fin es obligatorio';
+    // if (!formData.name) errores.value.name = 'El nombre es obligatorio';
+    // if (!formData.lastname) errores.value.lastname = 'El apellido es obligatorio';
+    // if (!formData.email) errores.value.email = 'El correo es obligatorio';
+    // if (!formData.phone) errores.value.phone = 'El número es obligatorio';
+    // if (!formData.id_evento) errores.value.id_evento = 'El tipo de evento es obligatorio';
+    // if (!formData.date) errores.value.date = 'La fecha es obligatorio';
+    // if (!formData.start_time) errores.value.start_time = 'La hora de inicio es obligatorio';
+    // if (!formData.end_time) errores.value.end_time = 'La hora de fin es obligatorio';
 
     return Object.keys(errores.value).length === 0;
 }
@@ -145,10 +145,10 @@ const validarFormulario = () => {
 // ENVIAR DATOS DEL FORMULARIO AL BACKEND
 const submit = (): void => {
 
-    if (!validarFormulario()) {
-        alert('Por favor, corrija los errores.');
-        return;
-    }
+    // if (!validarFormulario()) {
+    //     alert('Por favor, corrija los errores.');
+    //     return;
+    // }
     console.log('Datos del formulario:', formData);
 
     formData.post('/reservations/customers', {
@@ -162,6 +162,7 @@ const submit = (): void => {
 };
 
 </script>
+
 
 <template>
     <section>
@@ -180,7 +181,7 @@ const submit = (): void => {
                     <div class="flex justify-center items-center">
                         <button type="submit"
                             class="border-white border-[2px] px-2 py-2 rounded-xl hover:bg-white hover:text-black hover:scale-110 lg:w-[30%] lg:h-[50%] md:text-lg">
-                            {{ isEditing ? 'Actualizar' : 'Reservar' }}
+                            Reservar
                         </button>
                     </div>
                 </div>
@@ -210,50 +211,130 @@ const submit = (): void => {
                                 v-model="formData.email">
                             <span class="text-red-500" v-if="errores.email">{{ errores.email }}</span>
                         </div>
-                    </div>
-                    <!-- NÚMERO -->
-                    <div>
-                        <div>
-                            <input type="tel" placeholder="Número" pattern="[0-9]{3}[0-9]{3}[0-9]{3}"
-                                class="px-3 py-3 border rounded-xl w-full" v-model="formData.phone" maxlength="9">
-                            <span class="text-red-500" v-if="errores.phone">{{ errores.phone }}</span>
+                        <div class="flex-1">
+                            <h2 class="text-lg font-bold text-white">Haz tu reservación ahora !</h2>
                         </div>
+                        <div class="text-2xl">😃👍</div>
                     </div>
                 </div>
-                <!-- COLUMNA 3 -->
-                <div class="grid grid-rows-3 gap-5">
-                    <!-- TIPO DE RESERVA -->
-                    <div>
-                        <div>
-                            <select placeholder="Tipo de reserva" id="id_evento"
-                                class="px-3 py-3 border rounded-xl w-full [color-scheme:dark]" v-model="formData.id_evento">
-                                <option value="" disabled selected>Tipo de reserva</option>
-                                <option v-for="e in eventsServiceprecie" :key="e.id" :value="e.id">{{ e.nombre }} - ${{ e.precio }}</option>
-                            </select>
-                            <span class="text-red-500" v-if="errores.id_evento">{{ errores.id_evento }}</span>
+
+                <!-- Contenido -->
+                <div class="relative z-10 rounded-b-xl bg-zinc-900/50 px-8 py-6 backdrop-blur-sm">
+                    <div class="grid gap-6 xl:grid-cols-2">
+                        
+                        <!-- Columna izquierda -->
+                        <div class="space-y-4">
+                            <div>
+                                <label class="mb-1.5 block text-xs font-semibold text-zinc-300">Nombre completo</label>
+                                <div class="grid gap-3 sm:grid-cols-2">
+                                    <div>
+                                        <input 
+                                            type="text" 
+                                            placeholder="Nombre" 
+                                            class="w-full rounded-lg border border-zinc-700 bg-zinc-800/50 px-3 py-2.5 text-sm text-white placeholder-zinc-500 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                                            v-model="formData.name"
+                                        >
+                                        <span class="mt-0.5 block text-xs text-red-400" v-if="errores.name">{{ errores.name }}</span>
+                                    </div>
+                                    <div>
+                                        <input 
+                                            type="text" 
+                                            placeholder="Apellido" 
+                                            class="w-full rounded-lg border border-zinc-700 bg-zinc-800/50 px-3 py-2.5 text-sm text-white placeholder-zinc-500 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                                            v-model="formData.lastname"
+                                        >
+                                        <span class="mt-0.5 block text-xs text-red-400" v-if="errores.lastname">{{ errores.lastname }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="mb-1.5 block text-xs font-semibold text-zinc-300">Correo electrónico</label>
+                                <input 
+                                    type="email" 
+                                    placeholder="ejemplo@correo.com" 
+                                    class="w-full rounded-lg border border-zinc-700 bg-zinc-800/50 px-3 py-2.5 text-sm text-white placeholder-zinc-500 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                                    v-model="formData.email"
+                                >
+                                <span class="mt-0.5 block text-xs text-red-400" v-if="errores.email">{{ errores.email }}</span>
+                            </div>
+
+                            <div>
+                                <label class="mb-1.5 block text-xs font-semibold text-zinc-300">Número de teléfono</label>
+                                <input 
+                                    type="tel" 
+                                    placeholder="999 888 777" 
+                                    pattern="[0-9]{3}[0-9]{3}[0-9]{3}"
+                                    maxlength="9"
+                                    class="w-full rounded-lg border border-zinc-700 bg-zinc-800/50 px-3 py-2.5 text-sm text-white placeholder-zinc-500 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none [color-scheme:dark]"
+                                    v-model="formData.phone"
+                                >
+                                <span class="mt-0.5 block text-xs text-red-400" v-if="errores.phone">{{ errores.phone }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Columna derecha -->
+                        <div class="space-y-4">
+                            <div>
+                                <label class="mb-1.5 block text-xs font-semibold text-zinc-300">Tipo de reserva</label>
+                                <select 
+                                    id="id_evento"
+                                    class="w-full rounded-lg border border-zinc-700 bg-zinc-800/50 px-3 py-2.5 text-sm text-white transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none [color-scheme:dark] cursor-pointer"
+                                    v-model="formData.id_evento"
+                                >
+                                    <option value="" disabled selected>Selecciona una opción</option>
+                                    <option v-for="e in eventsServiceprecie" :key="e.id" :value="e.id" class="bg-zinc-800">
+                                        {{ e.nombre }} - S/ {{ e.precio }}
+                                    </option>
+                                </select>
+                                <span class="mt-0.5 block text-xs text-red-400" v-if="errores.id_evento">{{ errores.id_evento }}</span>
+                            </div>
+
+                            <div>
+                                <label class="mb-1.5 block text-xs font-semibold text-zinc-300">Fecha de reserva</label>
+                                <input 
+                                    type="date" 
+                                    class="w-full rounded-lg border border-zinc-700 bg-zinc-800/50 px-3 py-2.5 text-sm text-white transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none [color-scheme:dark]"
+                                    v-model="formData.date"
+                                >
+                                <span class="mt-0.5 block text-xs text-red-400" v-if="errores.date">{{ errores.date }}</span>
+                            </div>
+
+                            <div class="grid gap-3 sm:grid-cols-2">
+                                <div>
+                                    <label class="mb-1.5 block text-xs font-semibold text-zinc-300">Hora de inicio</label>
+                                    <input 
+                                        type="time" 
+                                        class="w-full rounded-lg border border-zinc-700 bg-zinc-800/50 px-3 py-2.5 text-sm text-white transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none [color-scheme:dark]"
+                                        v-model="formData.start_time"
+                                    >
+                                    <span class="mt-0.5 block text-xs text-red-400" v-if="errores.start_time">{{ errores.start_time }}</span>
+                                </div>
+                                <div>
+                                    <label class="mb-1.5 block text-xs font-semibold text-zinc-300">Hora de finalización</label>
+                                    <input 
+                                        type="time" 
+                                        class="w-full rounded-lg border border-zinc-700 bg-zinc-800/50 px-3 py-2.5 text-sm text-white transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none [color-scheme:dark]"
+                                        v-model="formData.end_time"
+                                    >
+                                    <span class="mt-0.5 block text-xs text-red-400" v-if="errores.end_time">{{ errores.end_time }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <!-- FECHA DE RESERVA -->
-                    <div>
-                        <div>
-                            <input type="date" name="" id="" placeholder="Fecha de reserva"
-                                class="px-3 py-3 border rounded-xl w-full [color-scheme:dark]" v-model="formData.date">
-                            <span class="text-red-500" v-if="errores.date">{{ errores.date }}</span>
-                        </div>
-                    </div>
-                    <!-- HORA DE RESERVA -->
-                    <div>
-                        <div>
-                            <input type="time" name="" id="" placeholder="Hora de inicio"
-                                class="px-3 py-3 border rounded-xl w-full [color-scheme:dark]" v-model="formData.start_time">
-                            <span class="text-red-500" v-if="errores.start_time">{{ errores.start_time }}</span>
-                        </div>
-                    </div><div>
-                        <div>
-                            <input type="time" name="" id="" placeholder="Hora de fin"
-                                class="px-3 py-3 border rounded-xl w-full [color-scheme:dark]" v-model="formData.end_time">
-                            <span class="text-red-500" v-if="errores.end_time">{{ errores.end_time }}</span>
-                        </div>
+
+                    <!-- Botón Reserva -->
+                    <div class="mt-6 flex justify-center">
+                        <button 
+                            type="submit"
+                            class="group relative inline-flex items-center gap-2 rounded-full bg-emerald-500 px-8 py-3 text-sm font-semibold text-zinc-900 transition-all hover:bg-emerald-400 hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/30 focus:outline-none focus:ring-4 focus:ring-emerald-500/30 active:scale-95"
+                        >
+                            <span class="absolute inset-0 rounded-full bg-white/20 opacity-0 transition-opacity group-hover:opacity-100"></span>
+                            <svg class="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            {{ isEditing ? 'Actualizar' : 'Confirmar Reserva' }}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -261,4 +342,4 @@ const submit = (): void => {
     </section>
 </template>
 
-<style></style>
+

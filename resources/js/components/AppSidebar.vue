@@ -15,6 +15,7 @@ import reservations from '@/routes/reservations';
 import users from '@/routes/users';
 import { type NavItem } from '@/types';
 import AppLogo from './AppLogo.vue';
+import { CalendarCheck } from 'lucide-vue-next'
 
 type PageProps = {
     auth?: {
@@ -42,10 +43,20 @@ const mainNavItems = computed<NavItem[]>(() => {
         icon: Users2,
     },
     {
-        title: 'eventos',
-        href: eventos.index.url(),
-        icon: LayoutGrid,
+        title: 'reservations',
+        href: reservations.index.url(),
+        icon: Users2,
     },
+    {
+        title: 'reservations',
+        href: reservations.index.url(),
+        icon: Users2,
+    },
+   {
+    title: 'eventos',
+    href: eventos.index.url(),
+    icon: CalendarCheck,
+},
     {
         title: 'productos',
         href: products.index.url(),
@@ -57,6 +68,7 @@ const mainNavItems = computed<NavItem[]>(() => {
         icon: LayoutGrid,
     },
     ];
+
 
     if (canManageReservations.value) {
         baseItems.push({
@@ -108,3 +120,4 @@ const footerNavItems: NavItem[] = [
     </Sidebar>
     <slot />
 </template>
+

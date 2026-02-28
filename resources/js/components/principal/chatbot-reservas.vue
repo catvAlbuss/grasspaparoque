@@ -53,6 +53,7 @@ const yapeNumber = import.meta.env.VITE_YAPE_NUMBER || '999999999';
 const yapeName = import.meta.env.VITE_YAPE_NAME || 'Grasspaparoque';
 const yapeQrUrl = import.meta.env.VITE_YAPE_QR_URL || '/img/yape-qr.svg';
 
+// Cambiamos isOpen a false para que empiece cerrado
 const isOpen = ref(false);
 const initialized = ref(false);
 const typing = ref(false);
@@ -65,6 +66,7 @@ const busy = ref<BusyReservation[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
 const chatScrollRef = ref<HTMLElement | null>(null);
 const chatEndRef = ref<HTMLElement | null>(null);
+const bubbleRef = ref<HTMLElement | null>(null); // Referencia para la burbuja
 
 const paymentDeadlineAt = ref<number | null>(null);
 const paymentCountdown = ref('');
@@ -574,19 +576,20 @@ async function submitReservation() {
 
 onMounted(async () => {
     await loadCatalogData();
-
-    setTimeout(async () => {
-        isOpen.value = true;
-        if (!initialized.value) {
-            initialized.value = true;
-            await initChat();
-        }
-    }, 500);
 });
 
 onUnmounted(() => {
     clearPaymentWindow();
 });
+
+// Función para abrir el chat y inicializarlo solo cuando sea necesario
+function openChat() {
+    isOpen.value = true;
+    if (!initialized.value) {
+        initialized.value = true;
+        initChat();
+    }
+}
 
 watch(options, () => {
     scrollToBottom();
@@ -599,16 +602,28 @@ watch(typing, () => {
 
 <template>
     <div class="fixed inset-x-0 bottom-0 z-50 sm:inset-auto sm:bottom-6 sm:right-6">
+        <!-- Burbuja de chat (siempre visible cuando el chat está cerrado) -->
         <button
-            class="mb-2 ml-auto mr-3 h-14 w-14 rounded-full bg-green-600 text-white shadow-xl hover:bg-green-500 sm:mb-3 sm:mr-0"
-            @click="isOpen = !isOpen"
+            v-if="!isOpen"
+            ref="bubbleRef"
+            class="mb-2 ml-auto mr-3 flex h-16 w-16 items-center justify-center rounded-full bg-green-600 text-white shadow-xl transition-all hover:h-20 hover:w-20 hover:bg-green-500 hover:text-lg sm:mb-3 sm:mr-0"
+            @click="openChat"
         >
-            Chat
+            <span class="text-sm font-bold">Chat</span>
         </button>
 
-        <div v-if="isOpen" class="flex h-[88dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-emerald-900 bg-slate-950 shadow-2xl sm:h-[38rem] sm:w-[24rem] sm:rounded-2xl">
-            <div class="border-b border-emerald-900 bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-800 px-4 py-3 text-sm font-semibold text-white">
-                Central de Reservas Grasspaparoque
+        <!-- Ventana de chat (solo visible cuando está abierto) - Altura reducida -->
+        <div v-if="isOpen" class="flex h-[70dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-emerald-900 bg-slate-950 shadow-2xl sm:mb-16 sm:h-[32rem] sm:w-[24rem] sm:rounded-2xl">
+            <div class="flex items-center border-b border-emerald-900 bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-800 px-4 py-3 text-sm font-semibold text-white">
+                <span class="flex-1">Central de Reservas Grasspaparoque</span>
+                <!-- Botón para cerrar el chat (X) - Simple y visible -->
+                <button
+                    class="ml-2 flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-white hover:bg-emerald-700 transition-colors"
+                    @click="isOpen = false"
+                    title="Cerrar chat"
+                >
+                    <span class="text-xl font-light leading-none">✕</span>
+                </button>
             </div>
 
             <div ref="chatScrollRef" class="flex-1 space-y-2 overflow-y-auto overscroll-contain bg-slate-900 px-3 py-3 text-sm">
