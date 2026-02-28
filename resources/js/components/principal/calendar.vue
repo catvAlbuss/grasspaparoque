@@ -4,19 +4,17 @@ import { ScheduleXCalendar } from '@schedule-x/vue'
 import {
     createCalendar,
     createViewDay,
-    createViewMonthAgenda,
-    createViewMonthGrid,
     createViewWeek,
+    createViewMonthGrid,
+    createViewMonthAgenda,
 } from '@schedule-x/calendar'
 import '@schedule-x/theme-default/dist/index.css'
 import 'temporal-polyfill/global'
 import { createEventsServicePlugin } from '@schedule-x/events-service'
 import { onMounted } from 'vue'
 
-// CREAR EL PLUGIN PARA MANEJAR LOS EVENTOS EN EL CALENDARIO
+// CREAR EL PLUGIN PARA MANEJAR LOS EVENTOS
 const eventsServicePlugin = createEventsServicePlugin()
-
-// CREAR LA INSTANCIA DEL CALENDARIO CON LAS VISTAS Y EL PLUGIN DE EVENTOS
 // Obtener fecha actual para mostrar el mes por defecto
 const today = new Date()
 const currentPlainDate = Temporal.PlainDate.from(
@@ -37,7 +35,6 @@ const calendarApp = createCalendar({
     events: [],
 }, [eventsServicePlugin])
 
-// AJUSTAR HORARIO
 const timeZone = 'UTC'
 
 const toZoned = (dateStr, timeStr) => {
@@ -45,7 +42,6 @@ const toZoned = (dateStr, timeStr) => {
     return Temporal.ZonedDateTime.from(`${dateStr}T${hhmmss}+00:00[${timeZone}]`)
 }
 
-// TRAER LAS RESERVAS OCUPADAS DESDE EL BACKEND
 onMounted(async () => {
     try {
         const response = await fetch('/reservations/busy', {
@@ -64,17 +60,14 @@ onMounted(async () => {
                 start: toZoned(r.date, r.start_time),
                 end: toZoned(r.date, r.end_time),
             }))
-
             eventsServicePlugin.set(eventos)
-            console.log('Reservaciones:', eventos)
-        } else {
-            console.error('La respuesta no es un array:', data)
         }
     } catch (error) {
         console.error('Error al cargar reservas:', error)
     }
 })
 </script>
+
 
 <template>
     <section id="Calendario" class="mx-auto w-full px-4 py-6">
@@ -135,11 +128,5 @@ onMounted(async () => {
     </section>
 </template>
 
-<style>
-.sx-vue-calendar-wrapper {
-    width: auto;
-    max-width: 100vw;
-    height: 800px;
-    max-height: 90vh;
-}
-</style>
+
+

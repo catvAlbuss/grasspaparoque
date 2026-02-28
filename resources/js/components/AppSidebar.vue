@@ -42,7 +42,11 @@ const mainNavItems = computed<NavItem[]>(() => {
         href: users.index.url(),
         icon: Users2,
     },
-     
+    {
+        title: 'reservations',
+        href: reservations.index.url(),
+        icon: Users2,
+    },
     {
         title: 'reservations',
         href: reservations.index.url(),
@@ -116,3 +120,4 @@ const footerNavItems: NavItem[] = [
     </Sidebar>
     <slot />
 </template>
+

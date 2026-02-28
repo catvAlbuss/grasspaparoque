@@ -39,6 +39,23 @@ class EventosController extends Controller
             'precio' => $validate['precio'],
             'descripcion' => $validate['descripcion'] ?? '',
             'estado' => $validate['estado'],
+        // $validate = $request->validate([
+
+        //     'name' => ['required', 'string', 'max:250'],
+        //     'lastname' => ['required', 'string', 'max:250'],
+        //     'email' => ['required', 'string', 'max:1000'],
+        //     'phone' => ['required', 'number', 'max:9'],
+        //     'type_reservation' => ['required', 'string', 'max:250'],
+        //     'date'=> ['required', 'date'],
+        //     'start_time' => ['required', 'date_format:H:i'],
+        //     'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+        // ]);
+
+        Eventos::create([
+            'nombre' => $request->input('nombre'),
+            'precio' => $request->input('precio'),
+            'descripcion' => $request->input('descripcion') ?? null,
+            'estado' => $request->input('estado'),
         ]);
 
         return to_route('eventos.index'); // ✅ Return agregado

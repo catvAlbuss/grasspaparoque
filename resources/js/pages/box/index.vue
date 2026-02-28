@@ -679,3 +679,4 @@ const getStateBadge = (s: string) => s === 'paid'
         </div>
     </AppLayout>
 </template>
+

@@ -445,3 +445,4 @@ const remove = (product: Products): void => {
         </div>
     </AppLayout>
 </template>
+
