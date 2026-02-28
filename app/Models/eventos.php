@@ -8,6 +8,7 @@ class Eventos extends Model
 {
     protected $fillable = [
         'nombre',
+        'tipo',
         'precio',
         'descripcion',
         'estado',
