@@ -2,19 +2,10 @@
 import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { cn } from '@/lib/utils'; // Ajusta la ruta según donde tengas tu archivo
-import { 
-  Users, 
-  Calendar, 
-  Package, 
-  DollarSign, 
-  AlertCircle,
-  TrendingUp,
-  TrendingDown,
-  ArrowRight
-} from 'lucide-vue-next';
+import { Users, Calendar, Package, DollarSign, AlertCircle, TrendingUp, TrendingDown, ArrowRight } from 'lucide-vue-next';
 
 // Tus props o datos
-const breadcrumbs = [ /* ... */ ];
+const breadcrumbs = [ /* ... */];
 
 const stats = [
   { label: 'Usuarios', value: '128', change: '+4 este mes', trend: 'up' },
@@ -54,35 +45,25 @@ const estadoStyle = {
 <template>
   <AppLayout :breadcrumbs="breadcrumbs">
     <div :class="cn('space-y-4 text-gray-100', 'px-2 sm:px-3')">
-      
+
       <!-- ===== TARJETAS DE ESTADÍSTICAS ===== -->
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2">
-        <div
-          v-for="s in stats"
-          :key="s.label"
-          :class="cn(
-            'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
-            'hover:bg-zinc-800/80 transition-all duration-200',
-            'hover:border-zinc-700'
-          )"
-        >
+        <div v-for="s in stats" :key="s.label" :class="cn(
+          'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
+          'hover:bg-zinc-800/80 transition-all duration-200',
+          'hover:border-zinc-700'
+        )">
           <div class="flex items-center justify-between mb-3">
             <div :class="cn('w-7 h-7 rounded-lg', 'bg-zinc-800/50', 'flex items-center justify-center')">
-              <component 
-                :is="s.label === 'Usuarios' ? Users : 
-                      s.label === 'Eventos' ? Calendar : 
-                      s.label === 'Productos' ? Package : 
-                      DollarSign" 
-                class="w-4 h-4 text-green-400"
-                :stroke-width="1.5"
-              />
+              <component :is="s.label === 'Usuarios' ? Users :
+                s.label === 'Eventos' ? Calendar :
+                  s.label === 'Productos' ? Package :
+                    DollarSign" class="w-4 h-4 text-green-400" :stroke-width="1.5" />
             </div>
-            <span
-              :class="cn(
-                'text-xs font-semibold flex items-center gap-0.5',
-                s.trend === 'up' ? 'text-green-400' : 'text-red-400'
-              )"
-            >
+            <span :class="cn(
+              'text-xs font-semibold flex items-center gap-0.5',
+              s.trend === 'up' ? 'text-green-400' : 'text-red-400'
+            )">
               <component :is="s.trend === 'up' ? TrendingUp : TrendingDown" class="w-3 h-3" />
               {{ s.change }}
             </span>
@@ -94,7 +75,7 @@ const estadoStyle = {
 
       <!-- ===== SECCIÓN PRINCIPAL: EVENTOS + STOCK ===== -->
       <div class="grid grid-cols-1 xl:grid-cols-3 gap-2">
-        
+
         <!-- PRÓXIMOS EVENTOS -->
         <div class="xl:col-span-2 bg-zinc-900 border border-zinc-800 rounded-xl p-4">
           <div class="flex items-center justify-between mb-3">
@@ -102,7 +83,8 @@ const estadoStyle = {
               <Calendar class="w-4 h-4 text-green-400" /> Próximos Eventos
             </h2>
             <button class="text-xs text-green-400 hover:text-green-300 transition-colors flex items-center gap-1">
-              Ver todos <ArrowRight class="w-3 h-3" />
+              Ver todos
+              <ArrowRight class="w-3 h-3" />
             </button>
           </div>
 
@@ -115,21 +97,16 @@ const estadoStyle = {
 
           <!-- Filas -->
           <div class="divide-y divide-zinc-800">
-            <div
-              v-for="ev in eventosPróximos"
-              :key="ev.nombre"
-              class="grid grid-cols-4 items-center py-2 hover:bg-zinc-800/50 transition-colors rounded-lg"
-            >
+            <div v-for="ev in eventosPróximos" :key="ev.nombre"
+              class="grid grid-cols-4 items-center py-2 hover:bg-zinc-800/50 transition-colors rounded-lg">
               <div class="col-span-2">
                 <p class="text-sm font-medium text-zinc-100">{{ ev.nombre }}</p>
                 <p class="text-2xs text-zinc-500">{{ ev.personas }} personas</p>
               </div>
               <p class="text-center text-2xs text-zinc-400 font-mono">{{ ev.fecha }}</p>
               <div class="flex justify-end">
-                <span
-                  class="inline-flex items-center gap-1 text-2xs font-medium px-2 py-0.5 rounded-full"
-                  :class="estadoStyle[ev.estado]?.badge"
-                >
+                <span class="inline-flex items-center gap-1 text-2xs font-medium px-2 py-0.5 rounded-full"
+                  :class="estadoStyle[ev.estado]?.badge">
                   <span class="w-1 h-1 rounded-full" :class="estadoStyle[ev.estado]?.dot" />
                   {{ ev.estado }}
                 </span>
@@ -156,10 +133,8 @@ const estadoStyle = {
                 <p class="text-2xs text-red-400 font-semibold">{{ p.stock }} {{ p.unidad }}</p>
               </div>
               <div class="w-full bg-zinc-800 rounded-full h-1.5">
-                <div
-                  class="h-1.5 rounded-full bg-red-500 transition-all"
-                  :style="{ width: `${Math.round((p.stock / p.max) * 100)}%` }"
-                />
+                <div class="h-1.5 rounded-full bg-red-500 transition-all"
+                  :style="{ width: `${Math.round((p.stock / p.max) * 100)}%` }" />
               </div>
               <p class="text-2xs text-zinc-600 mt-0.5">
                 {{ Math.round((p.stock / p.max) * 100) }}% del mínimo
@@ -167,7 +142,8 @@ const estadoStyle = {
             </div>
           </div>
 
-          <button class="mt-3 w-full py-2 text-2xs text-zinc-400 border border-zinc-700 rounded-lg hover:bg-zinc-800 hover:text-white transition-colors">
+          <button
+            class="mt-3 w-full py-2 text-2xs text-zinc-400 border border-zinc-700 rounded-lg hover:bg-zinc-800 hover:text-white transition-colors">
             Ver inventario completo
           </button>
         </div>
@@ -180,7 +156,8 @@ const estadoStyle = {
             <DollarSign class="w-4 h-4 text-green-400" /> Movimientos de Caja — Hoy
           </h2>
           <button class="text-xs text-green-400 hover:text-green-300 transition-colors flex items-center gap-1">
-            Ver caja <ArrowRight class="w-3 h-3" />
+            Ver caja
+            <ArrowRight class="w-3 h-3" />
           </button>
         </div>
 
@@ -192,16 +169,11 @@ const estadoStyle = {
 
         <!-- Filas -->
         <div class="divide-y divide-zinc-800">
-          <div
-            v-for="(m, i) in movimientosCaja"
-            :key="i"
-            class="grid grid-cols-3 items-center py-2 hover:bg-zinc-800/50 transition-colors rounded-lg"
-          >
+          <div v-for="(m, i) in movimientosCaja" :key="i"
+            class="grid grid-cols-3 items-center py-2 hover:bg-zinc-800/50 transition-colors rounded-lg">
             <div class="col-span-2 flex items-center gap-2">
-              <span
-                class="w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold flex-shrink-0"
-                :class="m.tipo === 'ingreso' ? 'bg-green-400/10 text-green-400' : 'bg-red-400/10 text-red-400'"
-              >
+              <span class="w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold flex-shrink-0"
+                :class="m.tipo === 'ingreso' ? 'bg-green-400/10 text-green-400' : 'bg-red-400/10 text-red-400'">
                 {{ m.tipo === 'ingreso' ? '+' : '−' }}
               </span>
               <div>
@@ -209,10 +181,8 @@ const estadoStyle = {
                 <p class="text-2xs text-zinc-600 font-mono">{{ m.hora }}</p>
               </div>
             </div>
-            <p
-              class="text-right font-mono font-semibold text-xs"
-              :class="m.tipo === 'ingreso' ? 'text-green-400' : 'text-red-400'"
-            >
+            <p class="text-right font-mono font-semibold text-xs"
+              :class="m.tipo === 'ingreso' ? 'text-green-400' : 'text-red-400'">
               {{ m.monto }}
             </p>
           </div>
@@ -227,50 +197,38 @@ const estadoStyle = {
 
       <!-- ===== ACCESOS RÁPIDOS ===== -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <Link 
-          href="/users" 
-          :class="cn(
-            'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
-            'text-center hover:bg-zinc-800 transition-all duration-200',
-            'hover:border-zinc-700 group'
-          )"
-        >
+        <Link href="/users" :class="cn(
+          'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
+          'text-center hover:bg-zinc-800 transition-all duration-200',
+          'hover:border-zinc-700 group'
+        )">
           <Users class="w-6 h-6 mx-auto mb-1 text-green-400 group-hover:scale-110 transition-transform" />
           <span class="text-xs font-medium text-gray-300">Usuarios</span>
         </Link>
-        
-        <Link 
-          href="/events" 
-          :class="cn(
-            'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
-            'text-center hover:bg-zinc-800 transition-all duration-200',
-            'hover:border-zinc-700 group'
-          )"
-        >
+
+        <Link href="/events" :class="cn(
+          'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
+          'text-center hover:bg-zinc-800 transition-all duration-200',
+          'hover:border-zinc-700 group'
+        )">
           <Calendar class="w-6 h-6 mx-auto mb-1 text-green-400 group-hover:scale-110 transition-transform" />
           <span class="text-xs font-medium text-gray-300">Eventos</span>
         </Link>
-        
-        <Link 
-          href="/products" 
-          :class="cn(
-            'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
-            'text-center hover:bg-zinc-800 transition-all duration-200',
-            'hover:border-zinc-700 group'
-          )"
-        >
+
+        <Link href="/products" :class="cn(
+          'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
+          'text-center hover:bg-zinc-800 transition-all duration-200',
+          'hover:border-zinc-700 group'
+        )">
           <Package class="w-6 h-6 mx-auto mb-1 text-green-400 group-hover:scale-110 transition-transform" />
           <span class="text-xs font-medium text-gray-300">Productos</span>
         </Link>
-        
-        <Link 
-          href="/box" 
-          :class="cn(
-            'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
-            'text-center hover:bg-zinc-800 transition-all duration-200',
-            'hover:border-zinc-700 group'
-          )"
-        >
+
+        <Link href="/box" :class="cn(
+          'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
+          'text-center hover:bg-zinc-800 transition-all duration-200',
+          'hover:border-zinc-700 group'
+        )">
           <DollarSign class="w-6 h-6 mx-auto mb-1 text-green-400 group-hover:scale-110 transition-transform" />
           <span class="text-xs font-medium text-gray-300">Caja</span>
         </Link>
@@ -283,7 +241,9 @@ const estadoStyle = {
 <style scoped>
 /* Utilidad para texto más pequeño */
 .text-2xs {
-  font-size: 0.625rem; /* 10px */
-  line-height: 0.875rem; /* 14px */
+  font-size: 0.625rem;
+  /* 10px */
+  line-height: 0.875rem;
+  /* 14px */
 }
 </style>

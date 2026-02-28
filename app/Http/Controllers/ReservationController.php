@@ -21,7 +21,7 @@ class ReservationController extends Controller
         $reservations = Reservation::with(['evento:id,nombre', 'user:id,name', 'pay:id,amount', 'customer:id,name'])
             ->latest()
             ->get()
-            ->map(fn (Reservation $reservation) => [
+            ->map(fn(Reservation $reservation) => [
                 'id' => $reservation->id,
                 'id_evento' => $reservation->id_evento,
                 'id_user' => $reservation->id_user,
@@ -64,16 +64,16 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'lastname' => ['nullable', 'string', 'max:255'],
-        
-            'email' => ['nullable', 'email', 'max:255'],
-            'phone' => ['required', 'string', 'max:20'],
-            'id_evento' => ['required', 'integer', Rule::exists('eventos', 'id')],
-            'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
-           
+            'name'                 => ['required', 'string', 'max:255'],
+            'lastname'             => ['nullable', 'string', 'max:255'],
+            'email'                => ['nullable', 'email', 'max:255'],
+            'phone'                => ['required', 'string', 'max:20'],
+            'id_evento'            => ['required', 'integer', Rule::exists('eventos', 'id')],
+            'date'                 => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
+            'start_time'           => ['required', 'date_format:H:i'],
+            'end_time'             => ['required', 'date_format:H:i', 'after:start_time'],
+            'payment_proof_number' => ['nullable', 'string', 'max:100'],
+            'payment_proof_file'   => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ]);
 
         [$customerName, $customerLastname] = $this->normalizeCustomerName(
@@ -86,9 +86,8 @@ class ReservationController extends Controller
             $safePhone = preg_replace('/\D+/', '', $validated['phone']);
             $email = 'reserva_' . ($safePhone ?: time()) . '@local.test';
         }
-        $id_customer=null;
-        
-        $reservation = DB::transaction(function () use ($validated, $request, $customerName, $customerLastname, $email) {
+
+        DB::transaction(function () use ($validated, $request, $customerName, $customerLastname, $email) {
             $hasConflict = Reservation::query()
                 ->where('id_evento', $validated['id_evento'])
                 ->where('date', $validated['date'])
@@ -104,13 +103,11 @@ class ReservationController extends Controller
             }
 
             $customer = Customer::create([
-                'name' => $customerName,
+                'name'     => $customerName,
                 'lastname' => $customerLastname,
-                'email' => $email,
-                'phone' => $validated['phone'],
+                'email'    => $email,
+                'phone'    => $validated['phone'],
             ]);
-
-            $id_customer = $customer->id;
 
             $storedProofName = null;
             if ($request->hasFile('payment_proof_file')) {
@@ -119,21 +116,22 @@ class ReservationController extends Controller
                 );
             }
 
-            return Reservation::create([
-                'id_evento' => $validated['id_evento'],
-                'id_customer' => $customer->id,
-                'start_time' => $validated['start_time'],
-                'end_time' => $validated['end_time'],
-                'date' => $validated['date'],
-                'reservation_status' => 'free',
-                
+            Reservation::create([
+                'id_evento'            => $validated['id_evento'],
+                'id_customer'          => $customer->id,
+                'start_time'           => $validated['start_time'],
+                'end_time'             => $validated['end_time'],
+                'date'                 => $validated['date'],
+                'reservation_status'   => 'free',
+                'payment_status'       => 'pending',
+                'payment_proof_number' => $validated['payment_proof_number'] ?? null,
+                'payment_proof_name'   => $storedProofName,
             ]);
         });
 
-       // return response()->json([
-           // 'message' => 'Reserva completada',
-          //  'data' => $reservation,
-      //  ], 201);
+        return response()->json([
+            'message' => 'Reserva registrada con éxito. Revisaremos tu pago pronto.',
+        ], 201);
     }
 
     /**
@@ -215,32 +213,51 @@ class ReservationController extends Controller
     // FUNCION PARA TRAER EL TIPO DE RESERVA
     public function getTypeEvents()
     {
-        if (Eventos::count() === 0) {
-            Eventos::create([
-                'nombre' => 'Futbol',
-                'precio' => 50,
-                'descripcion' => 'Reserva de cancha de futbol',
-                'estado' => 'free',
+        try {
+            // Sembrar eventos iniciales si la tabla está vacía
+            if (Eventos::count() === 0) {
+                Eventos::create([
+                    'nombre'      => 'Fútbol',
+                    'tipo'        => 'cancha',
+                    'precio'      => 50,
+                    'descripcion' => 'Reserva de cancha de fútbol',
+                    'estado'      => 'free',
+                ]);
+
+                Eventos::create([
+                    'nombre'      => 'Vóley',
+                    'tipo'        => 'cancha',
+                    'precio'      => 50,
+                    'descripcion' => 'Reserva de cancha de vóley',
+                    'estado'      => 'free',
+                ]);
+
+                Eventos::create([
+                    'nombre'      => 'Evento',
+                    'tipo'        => 'evento',
+                    'precio'      => 0,
+                    'descripcion' => 'Eventos generales con precio variable',
+                    'estado'      => 'free',
+                ]);
+            }
+
+            $typeEvents = Eventos::select('id', 'nombre', 'tipo', 'precio')->get();
+
+            return response()->json($typeEvents);
+        } catch (\Throwable $e) {
+            \Log::error('Error in getTypeEvents: ' . $e->getMessage(), [
+                'exception' => $e,
             ]);
 
-            Eventos::create([
-                'nombre' => 'Voley',
-                'precio' => 50,
-                'descripcion' => 'Reserva de cancha de voley',
-                'estado' => 'free',
-            ]);
+            if (config('app.debug')) {
+                return response()->json([
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ], 500);
+            }
 
-            Eventos::create([
-                'nombre' => 'Evento',
-                'precio' => 0,
-                'descripcion' => 'Eventos generales con precio variable',
-                'estado' => 'free',
-            ]);
+            return response()->json(['error' => 'internal error'], 500);
         }
-
-        $typeEvents = Eventos::select('id', 'nombre', 'precio')->get();
-
-        return response()->json($typeEvents);
     }
 
     // CAPTURAR DATOS DE CLIENTE PARA RESERVA DESDE EL INICIO

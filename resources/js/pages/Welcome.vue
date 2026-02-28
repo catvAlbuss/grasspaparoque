@@ -15,9 +15,9 @@ import Navbar from '@/components/principal/navbar.vue';
     
     <Navbar />
     <Info />
-    <Calendar />
-    <Services1 />
+    <section id="calendar"><Calendar /></section>
+    <section id="services"><Services1 /></section>
     <Carrusel />
-    <Form1/>
+    <section id="contact"><Form1 /></section>
 
 </template>
