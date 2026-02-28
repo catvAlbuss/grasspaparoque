@@ -35,17 +35,17 @@ const editingId = ref<number | null>(null);
 const form = useForm({
     name: '',
     description: '',
-    stock:1,
+    stock: 1,
     price_unit: 1,
-    price_higher:1,
-    expiration_date:''
+    price_higher: 1,
+    expiration_date: ''
 });
 
 const deleteForm = useForm({});
 const deleteError = computed(() => (deleteForm.errors as Record<string, string | undefined>).delete);
 const isEditing = computed(() => editingId.value !== null);
 
-// Badge de stock 
+// ── Badge de stock (clases completas) ─────────────────────────────
 function getStockBadge(stock: number) {
     const num = parseInt(stock.toString());
     if (num === 0) return {
@@ -59,22 +59,22 @@ function getStockBadge(stock: number) {
         dotClass: 'w-2 h-2 rounded-full flex-shrink-0 bg-amber-400 shadow-[0_0_5px_rgba(245,158,11,0.5)]'
     };
     return {
-        label: `${num}`, icon: CheckCircle2,
+        label: num.toString(), icon: CheckCircle2,
         badgeClass: 'inline-flex items-center gap-1 rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1 text-[0.72rem] font-semibold text-green-500 whitespace-nowrap',
         dotClass: 'w-2 h-2 rounded-full flex-shrink-0 bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.5)]'
     };
 }
 
-// Nivel de precio 
-const getPrecioClasses = (price: string): string => {
-    const n = parseFloat(price) || 0;
+// ── Nivel de precio (clases completas Tailwind) ─────────────────────────────
+const getPrecioClasses = (price: number): string => {
+    const n = price || 0;
     if (n === 0) return 'inline-flex items-center gap-0.5 rounded-md border border-zinc-700 bg-zinc-800/50 px-2 py-0.5 text-[0.78rem] font-bold text-zinc-400';
     if (n <= 50) return 'inline-flex items-center gap-0.5 rounded-md border border-green-500/20 bg-green-500/[0.09] px-2 py-0.5 text-[0.78rem] font-bold text-green-500';
     if (n <= 200) return 'inline-flex items-center gap-0.5 rounded-md border border-amber-500/25 bg-amber-500/[0.08] px-2 py-0.5 text-[0.78rem] font-bold text-amber-400';
     return 'inline-flex items-center gap-0.5 rounded-md border border-purple-500/25 bg-purple-500/[0.08] px-2 py-0.5 text-[0.78rem] font-bold text-purple-400';
 };
 
-// Estados
+// ── Stats ────────────────────────────────────────────
 const totalProducts = computed(() => products.value.length);
 const lowStockProducts = computed(() => products.value.filter(p => p.stock < 10 && p.stock > 0).length);
 const outOfStockProducts = computed(() => products.value.filter(p => p.stock === 0).length);
@@ -86,7 +86,7 @@ const totalInventoryValue = computed(() =>
     }, 0)
 );
 
-// Cambio de moneda a Soles Peruanos (PEN)
+// Formatear moneda a Soles Peruanos (PEN)
 const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('es-PE', {
         style: 'currency', currency: 'PEN', minimumFractionDigits: 2, currencyDisplay: 'symbol'
@@ -130,7 +130,7 @@ const remove = (product: Products): void => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-5 p-5">
 
-            <!-- HERO HEADER -->
+            <!-- ══ HERO HEADER ══════════════════════════════════ -->
             <div class="relative overflow-hidden rounded-[1.1rem] border border-green-400/[0.12] px-7 py-6"
                 style="background: linear-gradient(135deg, #052e16 0%, #14532d 45%, #15803d 100%);">
                 <div class="pointer-events-none absolute inset-0"
@@ -143,6 +143,7 @@ const remove = (product: Products): void => {
                         </div>
                         <div>
                             <h1 class="text-[1.35rem] font-bold tracking-tight text-white" style="letter-spacing:-0.03em;">Gestión de Productos</h1>
+                            <p class="mt-0.5 text-[0.8rem]" style="color:rgba(134,239,172,0.8);">Controla el inventario de tu grass deportivo</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-green-400/30 bg-green-500/15 px-3 py-1.5 text-[0.76rem] font-semibold text-green-400">
@@ -196,7 +197,7 @@ const remove = (product: Products): void => {
                 </div>
             </div>
 
-            <!-- FORM CARD -->
+            <!-- ══ FORM CARD ════════════════════════════════════ -->
             <section class="relative overflow-hidden rounded-[1.1rem] border border-border bg-background transition-shadow duration-300 hover:shadow-[0_4px_24px_rgba(22,163,74,0.07)]">
                 <div class="absolute inset-x-0 top-0 h-[2.5px]"
                     :class="isEditing ? 'bg-gradient-to-r from-amber-500 to-orange-400' : 'bg-gradient-to-r from-green-700 via-green-500 to-green-400'" />
@@ -217,9 +218,8 @@ const remove = (product: Products): void => {
                     </div>
                 </div>
 
-                <!-- Formulario de Registro Producto -->
                 <form class="grid grid-cols-1 gap-4 px-6 py-5 md:grid-cols-2" @submit.prevent="submit">
-                    
+                    <!-- Nombre -->
                     <div class="flex flex-col gap-1.5">
                         <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <Package :size="12" class="text-green-500" />
@@ -230,6 +230,7 @@ const remove = (product: Products): void => {
                         <InputError :message="form.errors.name" />
                     </div>
 
+                    <!-- Precio Unitario -->
                     <div class="flex flex-col gap-1.5">
                         <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <Tag :size="12" class="text-green-500" />
@@ -243,6 +244,7 @@ const remove = (product: Products): void => {
                         <InputError :message="form.errors.price_unit" />
                     </div>
 
+                    <!-- Descripción (full width) -->
                     <div class="col-span-full flex flex-col gap-1.5">
                         <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <FileText :size="12" class="text-green-500" />
@@ -253,6 +255,7 @@ const remove = (product: Products): void => {
                         <InputError :message="form.errors.description" />
                     </div>
 
+                    <!-- Stock -->
                     <div class="flex flex-col gap-1.5">
                         <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <CalendarDays :size="12" class="text-green-500" />
@@ -264,6 +267,7 @@ const remove = (product: Products): void => {
                         <InputError :message="form.errors.stock" />
                     </div>
 
+                    <!-- Precio al Mayor -->
                     <div class="flex flex-col gap-1.5">
                         <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <Tag :size="12" class="text-green-500" />
@@ -277,6 +281,7 @@ const remove = (product: Products): void => {
                         <InputError :message="form.errors.price_higher" />
                     </div>
 
+                    <!-- Fecha Vencimiento -->
                     <div class="flex flex-col gap-1.5">
                         <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <CalendarDays :size="12" class="text-green-500" />
@@ -305,7 +310,7 @@ const remove = (product: Products): void => {
                 </form>
             </section>
 
-            <!-- TABLA CARD  -->
+            <!-- ══ TABLE CARD ═══════════════════════════════════ -->
             <section class="relative overflow-hidden rounded-[1.1rem] border border-border bg-background transition-shadow duration-300 hover:shadow-[0_4px_24px_rgba(22,163,74,0.07)]">
                 <div class="absolute inset-x-0 top-0 h-[2.5px] bg-gradient-to-r from-green-700 via-green-500 to-green-400" />
                 
@@ -346,7 +351,7 @@ const remove = (product: Products): void => {
                                 <th class="whitespace-nowrap border-b border-green-500/15 px-4 py-2.5 text-left text-[0.68rem] font-bold uppercase tracking-[0.07em] text-green-500">
                                     <CalendarDays :size="11" class="mr-0.5 inline align-middle opacity-80" />Vencimiento
                                 </th>
-                                <th class="w-[160px] whitespace-nowrap border-b border-green-500/15 px-4 py-2.5 text-right text-[0.68rem] font-bold uppercase tracking-[0.07em] text-green-500">Acciones</th>
+                                <th class="w-[100px] whitespace-nowrap border-b border-green-500/15 px-4 py-2.5 text-right text-[0.68rem] font-bold uppercase tracking-[0.07em] text-green-500">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -397,7 +402,7 @@ const remove = (product: Products): void => {
 
                                 <!-- Precio Unitario -->
                                 <td class="px-4 py-[0.85rem] align-middle">
-                                    <span :class="getPrecioClasses(producto.price_unit.toString())">
+                                    <span :class="getPrecioClasses(producto.price_unit)">
                                         <DollarSign :size="11" />
                                         {{ formatCurrency(producto.price_unit || 0) }}
                                     </span>
@@ -405,7 +410,7 @@ const remove = (product: Products): void => {
 
                                 <!-- Precio al Mayor -->
                                 <td class="px-4 py-[0.85rem] align-middle">
-                                    <span :class="getPrecioClasses(producto.price_higher.toString())">
+                                    <span :class="getPrecioClasses(producto.price_higher)">
                                         <DollarSign :size="11" />
                                         {{ formatCurrency(producto.price_higher || 0) }}
                                     </span>
@@ -417,7 +422,7 @@ const remove = (product: Products): void => {
                                     <span v-else class="text-[0.76rem] italic text-zinc-500">—</span>
                                 </td>
 
-                                <!-- Acciones -->
+                                <!-- Acciones (solo iconos) -->
                                 <td class="px-4 py-[0.85rem] align-middle text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         <button class="flex h-8 w-8 items-center justify-center rounded-lg border border-green-500/20 bg-green-500/10 text-green-500 transition-all hover:translate-y-[-2px] hover:border-green-600 hover:bg-green-600 hover:text-white hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)] disabled:cursor-not-allowed disabled:opacity-40"

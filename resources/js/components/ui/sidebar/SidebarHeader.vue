@@ -1,3 +1,4 @@
+<!-- components/ui/sidebar/SidebarHeader.vue -->
 <script setup lang="ts">
 import type { HTMLAttributes } from "vue"
 import { cn } from "@/lib/utils"
@@ -34,4 +35,3 @@ const emit = defineEmits<{
     </div>
   </div>
 </template>
-

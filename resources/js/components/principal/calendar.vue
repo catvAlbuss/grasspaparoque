@@ -15,7 +15,6 @@ import { onMounted } from 'vue'
 
 // CREAR EL PLUGIN PARA MANEJAR LOS EVENTOS
 const eventsServicePlugin = createEventsServicePlugin()
-
 // Obtener fecha actual para mostrar el mes por defecto
 const today = new Date()
 const currentPlainDate = Temporal.PlainDate.from(
@@ -40,7 +39,7 @@ const timeZone = 'UTC'
 
 const toZoned = (dateStr, timeStr) => {
     const hhmmss = timeStr.length === 5 ? `${timeStr}:00` : timeStr
-    return Temporal.ZonedDateTime.from(`${dateStr}T${hhmmss}-00:00[${timeZone}]`)
+    return Temporal.ZonedDateTime.from(`${dateStr}T${hhmmss}+00:00[${timeZone}]`)
 }
 
 onMounted(async () => {

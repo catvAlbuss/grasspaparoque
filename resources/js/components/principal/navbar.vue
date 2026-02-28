@@ -1,7 +1,7 @@
 ﻿<script setup>
 import { ref } from 'vue'
-import { Head, Link } from '@inertiajs/vue3';
-import { dashboard, login, register } from '@/routes';
+import { Link } from '@inertiajs/vue3';
+import { dashboard, login } from '@/routes';
 
 const menuOpen = ref(false)
 
@@ -21,7 +21,7 @@ const links = [
         <span class="text-xl font-bold text-white tracking-tight">Grass Papa Roque</span>
       </a>
 
-      <!-- Navegador -->
+      <!-- Navegador Desktop -->
       <div class="hidden items-center gap-1 md:flex">
         <RouterLink 
           v-for="link in links" 
@@ -33,7 +33,7 @@ const links = [
         </RouterLink>
       </div>
 
-      <!-- Botones de autenticación -->
+      <!-- Botones de autenticación Desktop -->
       <div class="hidden items-center gap-3 md:flex">
         <Link 
           v-if="$page.props.auth.user" 
@@ -79,6 +79,7 @@ const links = [
       :class="menuOpen ? 'block' : 'hidden'"
     >
       <div class="space-y-2 px-4 py-4 sm:px-6">
+        <!-- Links de navegación móvil -->
         <RouterLink 
           v-for="link in links" 
           :key="link.label" 
@@ -89,7 +90,11 @@ const links = [
           {{ link.label }}
         </RouterLink>
         
-        <div class="border-t border-zinc-800 pt-3 mt-3">
+        <!-- Separador -->
+        <div class="border-t border-zinc-800 pt-3 mt-3"></div>
+        
+        <!-- Botones de autenticación móvil -->
+        <div class="space-y-2">
           <Link 
             v-if="$page.props.auth.user" 
             :href="dashboard()"
@@ -102,18 +107,23 @@ const links = [
             Dashboard
           </Link>
           
-          <template v-else>
-            <Link 
-              :href="login()"
-              class="flex items-center rounded-lg border-2 border-white/20 bg-transparent px-4 py-3 text-base font-semibold text-white transition-all hover:bg-white/10"
-              @click="menuOpen = false"
-            >
-              Log in
-            </Link>
-          </template>
+          <Link 
+            v-else
+            :href="login()"
+            class="flex items-center rounded-lg border-2 border-white/20 bg-transparent px-4 py-3 text-base font-semibold text-white transition-all hover:bg-white/10"
+            @click="menuOpen = false"
+          >
+            Log in
+          </Link>
         </div>
       </div>
     </div>
   </header>
 </template>
 
+<style scoped>
+/* Estilos adicionales si son necesarios */
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+}
+</style>

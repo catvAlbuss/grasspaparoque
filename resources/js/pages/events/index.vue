@@ -472,5 +472,3 @@ const remove = (events: eventos): void => {
         </div>
     </AppLayout>
 </template>
-
-

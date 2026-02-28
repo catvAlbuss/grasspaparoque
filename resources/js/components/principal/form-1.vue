@@ -130,14 +130,14 @@ const validarFormulario = () => {
         end_time: '',
     };
 
-    if (!formData.name) errores.value.name = 'El nombre es obligatorio';
-    if (!formData.lastname) errores.value.lastname = 'El apellido es obligatorio';
-    if (!formData.email) errores.value.email = 'El correo es obligatorio';
-    if (!formData.phone) errores.value.phone = 'El número es obligatorio';
-    if (!formData.id_evento) errores.value.id_evento = 'El tipo de evento es obligatorio';
-    if (!formData.date) errores.value.date = 'La fecha es obligatorio';
-    if (!formData.start_time) errores.value.start_time = 'La hora de inicio es obligatorio';
-    if (!formData.end_time) errores.value.end_time = 'La hora de fin es obligatorio';
+    // if (!formData.name) errores.value.name = 'El nombre es obligatorio';
+    // if (!formData.lastname) errores.value.lastname = 'El apellido es obligatorio';
+    // if (!formData.email) errores.value.email = 'El correo es obligatorio';
+    // if (!formData.phone) errores.value.phone = 'El número es obligatorio';
+    // if (!formData.id_evento) errores.value.id_evento = 'El tipo de evento es obligatorio';
+    // if (!formData.date) errores.value.date = 'La fecha es obligatorio';
+    // if (!formData.start_time) errores.value.start_time = 'La hora de inicio es obligatorio';
+    // if (!formData.end_time) errores.value.end_time = 'La hora de fin es obligatorio';
 
     return Object.keys(errores.value).length === 0;
 }
@@ -165,23 +165,51 @@ const submit = (): void => {
 
 
 <template>
-    <section class="mx-auto w-full px-4 py-6">
-        <form @submit.prevent="submit" class="relative">
-            
-            <!-- Contenedor principal -->
-            <div class="relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-zinc-900 via-zinc-900 to-emerald-900/20 p-1 shadow-xl shadow-emerald-500/10">
-                
-                <!-- Glow efectos -->
-                <div class="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl"></div>
-                <div class="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-green-500/10 blur-3xl"></div>
-
-                <!-- Header -->
-                <div class="relative z-10 rounded-t-xl bg-zinc-900/80 px-8 py-4 backdrop-blur-sm border-b border-zinc-800">
-                    <div class="flex items-center gap-3">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/20 border border-emerald-500/30">
-                            <svg class="h-5 w-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
+    <section>
+        <!-- FORMULARIO -->
+        <form @submit.prevent="submit">
+            <!-- MAIN -->
+            <div class="grid md:grid-cols-3 gap-5 p-8 mt-2 bg-black text-white md:h-80">
+                <!-- COLUMNA 1 -->
+                <div class="grid grid-rows-2 gap-2">
+                    <!-- TITULO -->
+                    <div class="flex justify-center items-center">
+                        <h2>¡Haz tu reservación ahora!</h2>
+                        <h3>😃👍</h3>
+                    </div>
+                    <!-- BOTON -->
+                    <div class="flex justify-center items-center">
+                        <button type="submit"
+                            class="border-white border-[2px] px-2 py-2 rounded-xl hover:bg-white hover:text-black hover:scale-110 lg:w-[30%] lg:h-[50%] md:text-lg">
+                            Reservar
+                        </button>
+                    </div>
+                </div>
+                <!-- COLUMNA 2 -->
+                <div class="grid md:grid-rows-3 gap-5">
+                    <!-- NOMBRE -->
+                    <div class="grid gap-5 sm:grid-cols-2">
+                        <div class="">
+                            <!-- required="false" -->
+                            <input type="text" placeholder="Nombre" class="px-3 py-3 border rounded-xl w-full"
+                                v-model="formData.name">
+                            <span class="text-red-500" v-if="errores.name">{{ errores.name }}</span>
+                            <!-- <span v-if="touched.nombre && errors.nombre" class="text-red-500 text-sm">
+                                {{ errors.nombre }}
+                            </span> -->
+                        </div>
+                        <div>
+                            <input type="text" placeholder="Apellido" class="px-3 py-3 border rounded-xl w-full"
+                                v-model="formData.lastname">
+                            <span class="text-red-500" v-if="errores.lastname">{{ errores.lastname }}</span>
+                        </div>
+                    </div>
+                    <!-- CORREO -->
+                    <div>
+                        <div class="">
+                            <input type="email" placeholder="Correo" class="px-3 py-3 border rounded-xl w-full"
+                                v-model="formData.email">
+                            <span class="text-red-500" v-if="errores.email">{{ errores.email }}</span>
                         </div>
                         <div class="flex-1">
                             <h2 class="text-lg font-bold text-white">Haz tu reservación ahora !</h2>

@@ -1,3 +1,4 @@
+<!-- components/ui/sidebar/SidebarFooter.vue -->
 <script setup lang="ts">
 import type { HTMLAttributes } from "vue"
 import { cn } from "@/lib/utils"
@@ -62,4 +63,3 @@ const logout = () => {
     <slot />
   </div>
 </template>
-

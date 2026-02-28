@@ -62,8 +62,9 @@ const sales = computed(() => props.sales || []);
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Caja', href: './caja' }];
 
-
+// ============================
 // FUNCIONES DE VENTA
+// ============================
 const SaleItems = ref<SaleItem[]>([]);
 const searchQuery = ref<string>('');
 const paymentMethod = ref<string>('cash');
@@ -92,15 +93,23 @@ const addToSale = (product: Products) => {
 const updateQuantity = (index: number, newQuantity: number | string) => {
     let quantity = typeof newQuantity === 'string' ? parseInt(newQuantity) : newQuantity;
     if (isNaN(quantity) || quantity < 1) quantity = 1;
+    
     const item = SaleItems.value[index];
+    // Validar que no exceda el stock máximo
+    if (quantity > item.max_stock) {
+        alert(`Stock insuficiente para ${item.name}. Disponible: ${item.max_stock}`);
+        quantity = item.max_stock;
+    }
+    
     item.quantity = quantity;
     item.total = item.price_unit * quantity;
 };
 
 const removeItemSale = (index: number) => SaleItems.value.splice(index, 1);
 
-
+// ============================
 // PAGINACIÓN
+// ============================
 const currentPage = ref(1);
 const itemsPage = 8;
 const paginatedProducts = computed(() => {
@@ -119,8 +128,9 @@ const changePage = (page: number) => {
     if (page >= 1 && page <= totalPages.value) currentPage.value = page;
 };
 
-
+// ============================
 // TOTALES Y MONEDA
+// ============================
 const subTotal = computed(() => SaleItems.value.reduce((s, i) => s + i.total, 0));
 const igv = computed(() => Number(subTotal.value) * 0.18);
 const total = computed(() => Number(subTotal.value) + igv.value);
@@ -129,35 +139,52 @@ const formatCurrency = (value: number) => new Intl.NumberFormat('es-PE', {
     style: 'currency', currency: 'PEN', minimumFractionDigits: 2
 }).format(value);
 
-const procesSale = async () => {
-    if (SaleItems.value.length === 0) { alert('Selecciona al menos un producto'); return; }
+const processSale = async () => {
+    if (SaleItems.value.length === 0) { 
+        alert('Selecciona al menos un producto'); 
+        return; 
+    }
     if (!confirm('¿Confirmar la venta?')) return;
+    
     router.post('/box', {
         items: SaleItems.value.map(item => ({
-            id: item.id, name: item.name, quantity: item.quantity,
-            status: item.status, method: item.method, total: item.total
+            id: item.id,
+            name: item.name,
+            quantity: item.quantity,
+            price_unit: item.price_unit,
+            total: item.total
         })),
-        total: total.value, state: state.value, payment: paymentMethod.value,
+        total: total.value,
+        state: state.value,
+        payment_method: paymentMethod.value,
+    }, {
+        onSuccess: () => {
+            // Limpiar carrito después de venta exitosa
+            SaleItems.value = [];
+        }
     });
 };
 
-
+// ============================
 // INDICADORES
+// ============================
 const totalProducts = computed(() => products.value.length);
 const lowStockCount = computed(() => products.value.filter(p => parseInt(p.stock) < 10 && parseInt(p.stock) > 0).length);
 const outOfStockCount = computed(() => products.value.filter(p => parseInt(p.stock) === 0).length);
 
+// ============================
 // FILTROS HISTORIAL
+// ============================
 const historySearch = ref('');
 const historyPaymentFilter = ref('all');
 const historyStateFilter = ref('all');
 const filteredSales = computed(() => sales.value.filter(sale => {
-    const matchSearch = historySearch.value === '' || 
-        sale.sale_number.toLowerCase().includes(historySearch.value.toLowerCase()) ||
-        sale.items.some(i => i.name.toLowerCase().includes(historySearch.value.toLowerCase()));
-    const matchPayment = historyPaymentFilter.value === 'all' || sale.payment_method === historyPaymentFilter.value;
-    const matchState = historyStateFilter.value === 'all' || sale.state === historyStateFilter.value;
-    return matchSearch && matchPayment && matchState;
+const matchSearch = historySearch.value === '' || 
+sale.sale_number.toLowerCase().includes(historySearch.value.toLowerCase()) ||
+sale.items.some(i => i.name.toLowerCase().includes(historySearch.value.toLowerCase()));
+const matchPayment = historyPaymentFilter.value === 'all' || sale.payment_method === historyPaymentFilter.value;
+const matchState = historyStateFilter.value === 'all' || sale.state === historyStateFilter.value;
+return matchSearch && matchPayment && matchState;
 }));
 const historyPage = ref(1);
 const historyPerPage = 10;
@@ -175,7 +202,7 @@ const clearHistoryFilters = () => {
     historyPage.value = 1;
 };
 
-// Badges de stock 
+// ── Badges de stock (clases completas Tailwind) ─────────────────────────────
 const getStockBadge = (stock: string) => {
     const num = parseInt(stock);
     if (num === 0) return {
@@ -189,13 +216,13 @@ const getStockBadge = (stock: string) => {
         dotClass: 'w-2 h-2 rounded-full flex-shrink-0 bg-amber-400 shadow-[0_0_5px_rgba(245,158,11,0.5)]'
     };
     return {
-        label: `${num}`, icon: CheckCircle2,
+        label: num.toString(), icon: CheckCircle2,
         badgeClass: 'inline-flex items-center gap-1 rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1 text-[0.72rem] font-semibold text-green-500 whitespace-nowrap',
         dotClass: 'w-2 h-2 rounded-full flex-shrink-0 bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.5)]'
     };
 };
 
-// Niveles de precio 
+// ── Niveles de precio ───────────────────────────────────────────────────────
 const getPrecioClasses = (price: number): string => {
     if (price === 0) return 'inline-flex items-center gap-0.5 rounded-md border border-zinc-700 bg-zinc-800/50 px-2 py-0.5 text-[0.78rem] font-bold text-zinc-400';
     if (price <= 50) return 'inline-flex items-center gap-0.5 rounded-md border border-green-500/20 bg-green-500/[0.09] px-2 py-0.5 text-[0.78rem] font-bold text-green-500';
@@ -203,7 +230,7 @@ const getPrecioClasses = (price: number): string => {
     return 'inline-flex items-center gap-0.5 rounded-md border border-purple-500/25 bg-purple-500/[0.08] px-2 py-0.5 text-[0.78rem] font-bold text-purple-400';
 };
 
-// Método de pago 
+// ── Método de pago badge ────────────────────────────────────────────────────
 const getPaymentBadge = (method: string) => {
     const icons: Record<string, any> = { cash: DollarSign, card: CreditCard, transfer: Smartphone };
     const labels: Record<string, string> = { cash: 'Efectivo', card: 'Tarjeta', transfer: 'Yape/Plin' };
@@ -215,7 +242,7 @@ const getPaymentBadge = (method: string) => {
     return { icon: icons[method] || DollarSign, label: labels[method] || method, class: classes[method] || classes.cash };
 };
 
-// Estado de venta 
+// ── Estado de venta badge ───────────────────────────────────────────────────
 const getStateBadge = (s: string) => s === 'paid'
     ? { label: 'Pagado', class: 'inline-flex items-center gap-1 rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1 text-[0.72rem] font-semibold text-green-500 whitespace-nowrap' }
     : { label: 'Pendiente', class: 'inline-flex items-center gap-1 rounded-full border border-amber-500/25 bg-amber-500/[0.08] px-2.5 py-1 text-[0.72rem] font-semibold text-amber-400 whitespace-nowrap' };
@@ -226,7 +253,7 @@ const getStateBadge = (s: string) => s === 'paid'
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-5 p-5">
 
-            <!-- HEADER -->
+            <!-- ══ HERO HEADER ══════════════════════════════════ -->
             <div class="relative overflow-hidden rounded-[1.1rem] border border-green-400/[0.12] px-7 py-6"
                 style="background: linear-gradient(135deg, #052e16 0%, #14532d 45%, #15803d 100%);">
                 <div class="pointer-events-none absolute inset-0"
@@ -247,7 +274,7 @@ const getStateBadge = (s: string) => s === 'paid'
                     </div>
                 </div>
 
-                <!-- Calculo por Fila -->
+                <!-- Stats row -->
                 <div class="relative flex items-center rounded-[10px] border border-green-400/[0.12] px-4 py-2.5"
                     style="background:rgba(24,24,27,0.50); backdrop-filter:blur(8px);">
                     <div class="flex flex-1 items-center justify-center gap-2">
@@ -292,10 +319,10 @@ const getStateBadge = (s: string) => s === 'paid'
                 </div>
             </div>
 
-            <!-- Layout: Productos y Venta -->
+            <!-- Layout: Productos + Venta -->
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 
-                <!-- PANEL IZQUIERDO: PRODUCTOS -->
+                <!-- ══ PANEL IZQUIERDO: PRODUCTOS ═══════════════ -->
                 <section class="relative overflow-hidden rounded-[1.1rem] border border-border bg-background transition-shadow duration-300 hover:shadow-[0_4px_24px_rgba(22,163,74,0.07)]">
                     <div class="absolute inset-x-0 top-0 h-[2.5px] bg-gradient-to-r from-green-700 via-green-500 to-green-400" />
                     
@@ -377,7 +404,8 @@ const getStateBadge = (s: string) => s === 'paid'
                                         </span>
                                     </td>
                                     <td class="px-4 py-[0.85rem] align-middle text-right">
-                                        <button class="flex h-8 w-8 items-center justify-center rounded-lg border border-green-500/20 bg-green-500/10 text-green-500 transition-all hover:translate-y-[-2px] hover:border-green-600 hover:bg-green-600 hover:text-white hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)] disabled:cursor-not-allowed disabled:opacity-40"
+                                        <button class="flex h-8 w-8 items-center justify-center rounded-lg border border-green-500/20 bg-green-500/10 text-green-500 transition-all 
+                                        hover:translate-y-[-2px] hover:border-green-600 hover:bg-green-600 hover:text-white hover:shadow-[0_4px_12px_rgba(34,197,94,0.3)] disabled:cursor-not-allowed disabled:opacity-40"
                                             :disabled="parseInt(p.stock) === 0" @click="addToSale(p)" :title="parseInt(p.stock) === 0 ? 'Agotado' : 'Agregar'">
                                             <Plus :size="16" />
                                         </button>
@@ -399,7 +427,7 @@ const getStateBadge = (s: string) => s === 'paid'
                     </div>
                 </section>
 
-                <!-- PANEL DERECHO: VENTA ACTUAL-->
+                <!-- ══ PANEL DERECHO: VENTA ACTUAL ═════════════ -->
                 <section class="relative overflow-hidden rounded-[1.1rem] border border-border bg-background transition-shadow duration-300 hover:shadow-[0_4px_24px_rgba(22,163,74,0.07)]">
                     <div class="absolute inset-x-0 top-0 h-[2.5px] bg-gradient-to-r from-green-700 via-green-500 to-green-400" />
                     
@@ -430,17 +458,17 @@ const getStateBadge = (s: string) => s === 'paid'
                                 <span class="block text-[0.75rem] text-muted-foreground">{{ formatCurrency(item.price_unit) }} c/u</span>
                             </div>
                             <div class="flex items-center gap-3">
-
                                 <!-- Controles de cantidad -->
                                 <div class="flex items-center gap-1.5">
                                     <button type="button" @click="updateQuantity(idx, item.quantity - 1)"
                                         class="flex h-7 w-7 items-center justify-center rounded-[6px] bg-zinc-700 text-white transition hover:bg-green-600">
                                         <span class="text-lg leading-none">−</span>
                                     </button>
-                                    <input type="number" :value="item.quantity" @input="updateQuantity(idx, ($event.target as HTMLInputElement).value)"
+                                    <input type="number" :value="item.quantity" @input="(e) => updateQuantity(idx, (e.target as HTMLInputElement).value)"
                                         class="w-11 h-7 rounded-[6px] border border-zinc-600 bg-zinc-700 px-1 text-center text-[0.9rem] font-semibold text-white outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
                                     <button type="button" @click="updateQuantity(idx, item.quantity + 1)"
-                                        class="flex h-7 w-7 items-center justify-center rounded-[6px] bg-zinc-700 text-white transition hover:bg-green-600">
+                                        :disabled="item.quantity >= item.max_stock"
+                                        class="flex h-7 w-7 items-center justify-center rounded-[6px] bg-zinc-700 text-white transition hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-40">
                                         <span class="text-lg leading-none">+</span>
                                     </button>
                                 </div>
@@ -453,9 +481,8 @@ const getStateBadge = (s: string) => s === 'paid'
                         </div>
                     </div>
 
-                    <!-- Pago y Totales -->
+                    <!-- Footer: Pago + Totales -->
                     <div class="border-t border-border px-6 py-4" style="background:rgba(39,39,42,0.30);">
-                        
                         <!-- Métodos de pago -->
                         <div class="mb-4 flex gap-2">
                             <button type="button" @click="paymentMethod = 'cash'"
@@ -483,7 +510,7 @@ const getStateBadge = (s: string) => s === 'paid'
                         </div>
 
                         <!-- Botón procesar -->
-                        <button type="button" @click="procesSale" :disabled="SaleItems.length === 0"
+                        <button type="button" @click="processSale" :disabled="SaleItems.length === 0"
                             class="relative w-full overflow-hidden rounded-[10px] bg-green-600 py-4 text-[1rem] font-semibold text-white shadow-[0_2px_10px_rgba(22,163,74,0.38)] transition hover:-translate-y-0.5 hover:bg-green-700 hover:shadow-[0_4px_16px_rgba(22,163,74,0.44)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50">
                             <span class="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
                             <span class="relative flex items-center justify-center gap-2">
@@ -495,7 +522,7 @@ const getStateBadge = (s: string) => s === 'paid'
                 </section>
             </div>
 
-            <!--  HISTORIAL DE VENTAS -->
+            <!-- ══ HISTORIAL DE VENTAS (DEBAJO) ═══════════════ -->
             <section class="relative overflow-hidden rounded-[1.1rem] border border-border bg-background transition-shadow duration-300 hover:shadow-[0_4px_24px_rgba(22,163,74,0.07)]">
                 <div class="absolute inset-x-0 top-0 h-[2.5px] bg-gradient-to-r from-green-700 via-green-500 to-green-400" />
                 
@@ -509,7 +536,7 @@ const getStateBadge = (s: string) => s === 'paid'
                     </div>
                 </div>
 
-                <!-- Estados rápidos -->
+                <!-- Stats rápidos -->
                 <div class="grid grid-cols-3 gap-4 px-6 py-4">
                     <div class="flex items-center gap-3 rounded-[8px] border border-border bg-zinc-800/30 px-4 py-3">
                         <span class="flex h-8 w-8 items-center justify-center rounded-[7px] border border-green-500/25 bg-green-500/[0.18] text-green-400">
@@ -602,7 +629,6 @@ const getStateBadge = (s: string) => s === 'paid'
                                 </th>
                             </tr>
                         </thead>
-
                         <tbody>
                             <tr v-for="sale in paginatedSales" :key="sale.id" class="border-b border-border transition-colors duration-[0.12s] last:border-b-0 hover:bg-zinc-800/30">
                                 <td class="px-4 py-[0.85rem] align-middle">

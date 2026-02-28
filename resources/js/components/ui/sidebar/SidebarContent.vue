@@ -1,3 +1,4 @@
+<!-- resources/js/components/ui/sidebar/SidebarContent.vue -->
 <script setup lang="ts">
 import type { HTMLAttributes } from "vue"
 import { cn } from "@/lib/utils"
@@ -5,12 +6,12 @@ import { Link, usePage } from '@inertiajs/vue3'
 import {
   LayoutDashboard,
   Users,
-  Calendar,
+  Calendar,     // Este lo usas para Eventos
+  Ticket,       // ¡Añade este para Reservas!
   Package,
   DollarSign,
-  Book,
+  ClipboardList,
 } from 'lucide-vue-next'
-
 const props = defineProps<{
   class?: HTMLAttributes["class"]
   expanded?: boolean
@@ -32,12 +33,12 @@ const menuItems = [
     path: '/users',
     active: currentUrl.startsWith('/users')
   },
-   { 
-    name: 'Reservas', 
-    icon: Book, 
-    path: '/reservations',
-    active: currentUrl.startsWith('/reservations')
-  },
+  { 
+  name: 'reservas', 
+  icon: ClipboardList,
+  path: '/reservations',
+  active: currentUrl.startsWith('/reservations')
+},
   { 
     name: 'Eventos', 
     icon: Calendar, 
@@ -92,4 +93,3 @@ const menuItems = [
     <slot />
   </div>
 </template>
-
