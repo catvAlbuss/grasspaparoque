@@ -6,9 +6,9 @@ import { dashboard, login } from '@/routes';
 const menuOpen = ref(false)
 
 const links = [
-  { label: 'Inicio', to: { path: '/', hash: '#home' } },
-  { label: 'Servicios', to: { path: '/', hash: '#services' } },
-  { label: 'Contacto', to: { path: '/', hash: '#contact' } },
+  { label: 'Inicio', href: '#home' },
+  { label: 'Servicios', href: '#services' },
+  { label: 'Contacto', href: '#contact' },
 ]
 </script>
 
@@ -23,10 +23,10 @@ const links = [
 
       <!-- Navegador Desktop -->
       <div class="hidden items-center gap-1 md:flex">
-        <RouterLink v-for="link in links" :key="link.label" :to="link.to"
+        <a v-for="link in links" :key="link.label" :href="link.href"
           class="rounded-lg px-4 py-2 text-sm font-medium text-zinc-300 transition-all hover:bg-zinc-800 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
           {{ link.label }}
-        </RouterLink>
+        </a>
       </div>
 
       <!-- Botones de autenticación Desktop -->
@@ -65,11 +65,11 @@ const links = [
     <div class="border-t border-zinc-800 bg-zinc-900 md:hidden" :class="menuOpen ? 'block' : 'hidden'">
       <div class="space-y-2 px-4 py-4 sm:px-6">
         <!-- Links de navegación móvil -->
-        <RouterLink v-for="link in links" :key="link.label" :to="link.to"
+        <a v-for="link in links" :key="link.label" :href="link.href"
           class="block rounded-lg px-4 py-3 text-base font-medium text-zinc-300 transition-all hover:bg-zinc-800 hover:text-white"
           @click="menuOpen = false">
           {{ link.label }}
-        </RouterLink>
+        </a>
 
         <!-- Separador -->
         <div class="border-t border-zinc-800 pt-3 mt-3"></div>

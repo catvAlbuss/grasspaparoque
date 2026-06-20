@@ -18,13 +18,12 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $reservations = Reservation::with(['evento:id,nombre', 'user:id,name', 'pay:id,amount', 'customer:id,name'])
+        $reservations = Reservation::with(['evento:id,nombre', 'pay:id,amount', 'customer:id,name'])
             ->latest()
             ->get()
             ->map(fn(Reservation $reservation) => [
                 'id' => $reservation->id,
                 'id_evento' => $reservation->id_evento,
-                'id_user' => $reservation->id_user,
                 'id_pay' => $reservation->id_pay,
                 'id_customer' => $reservation->id_customer,
                 'start_time' => $reservation->start_time,
@@ -36,7 +35,6 @@ class ReservationController extends Controller
                 'payment_proof_name' => $reservation->payment_proof_name,
                 'payment_proof_number' => $reservation->payment_proof_number,
                 'event_name' => $reservation->evento?->nombre,
-                'user_name' => $reservation->user?->name,
                 'pay_amount' => $reservation->pay?->amount,
                 'customer_name' => $reservation->customer?->name,
                 'customer_lastname' => $reservation->customer?->lastname,
@@ -63,6 +61,8 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
+        Reservation::expirePending();
+
         $validated = $request->validate([
             'name'                 => ['required', 'string', 'max:255'],
             'lastname'             => ['nullable', 'string', 'max:255'],
@@ -87,11 +87,13 @@ class ReservationController extends Controller
             $email = 'reserva_' . ($safePhone ?: time()) . '@local.test';
         }
 
-        DB::transaction(function () use ($validated, $request, $customerName, $customerLastname, $email) {
+        $eventoIds = $this->resolveGrupoIds(Eventos::select('id', 'tipo_ambiente', 'ambiente_grupo')->findOrFail($validated['id_evento']));
+
+        DB::transaction(function () use ($validated, $request, $customerName, $customerLastname, $email, $eventoIds) {
             $hasConflict = Reservation::query()
-                ->where('id_evento', $validated['id_evento'])
+                ->whereIn('id_evento', $eventoIds)
                 ->where('date', $validated['date'])
-                ->where('reservation_status', 'busy')
+                ->blocking()
                 ->where('start_time', '<', $validated['end_time'])
                 ->where('end_time', '>', $validated['start_time'])
                 ->exists();
@@ -159,7 +161,6 @@ class ReservationController extends Controller
     {
         $validated = $request->validate([
             'id_evento' => ['required', 'integer', Rule::exists('eventos', 'id')],
-            'id_user' => ['required', 'integer', Rule::exists('users', 'id')],
             'id_pay' => ['nullable', 'integer', Rule::exists('pays', 'id')],
             'id_customer' => ['required', 'integer', Rule::exists('customers', 'id')],
             'start_time' => ['required', 'date_format:H:i'],
@@ -173,7 +174,6 @@ class ReservationController extends Controller
 
         $reservation->update([
             'id_evento' => $validated['id_evento'],
-            'id_user' => $validated['id_user'],
             'id_pay' => $validated['id_pay'] ?? null,
             'id_customer' => $validated['id_customer'],
             'start_time' => $validated['start_time'],
@@ -201,11 +201,26 @@ class ReservationController extends Controller
     // FUNCION DE MOSTRAR ESTADO:OCUPADO EN EL CALENDARIO
     public function getReservasOcupadas()
     {
-        $reservasOcupadas = Reservation::where('reservation_status', 'busy')
-            ->select('id', 'id_evento', 'date', 'start_time', 'end_time')
+        Reservation::expirePending();
+
+        $reservasOcupadas = Reservation::query()
+            ->blocking()
+            ->with('evento:id,nombre')
+            ->select('id', 'id_evento', 'date', 'start_time', 'end_time', 'reservation_status', 'payment_status', 'created_at')
             ->orderBy('date')
             ->orderBy('start_time')
-            ->get();
+            ->get()
+            ->map(fn (Reservation $r) => [
+                'id'                 => $r->id,
+                'id_evento'          => $r->id_evento,
+                'event_nombre'       => $r->evento?->nombre,
+                'date'               => $r->date,
+                'start_time'         => $r->start_time,
+                'end_time'           => $r->end_time,
+                'reservation_status' => $r->reservation_status,
+                'payment_status'     => $r->payment_status,
+                'created_at'         => $r->created_at,
+            ]);
 
         return response()->json($reservasOcupadas);
     }
@@ -217,31 +232,37 @@ class ReservationController extends Controller
             // Sembrar eventos iniciales si la tabla está vacía
             if (Eventos::count() === 0) {
                 Eventos::create([
-                    'nombre'      => 'Fútbol',
-                    'tipo'        => 'cancha',
-                    'precio'      => 50,
-                    'descripcion' => 'Reserva de cancha de fútbol',
-                    'estado'      => 'free',
+                    'nombre'         => 'Fútbol',
+                    'tipo'           => 'cancha',
+                    'precio'         => 50,
+                    'descripcion'    => 'Reserva de cancha de fútbol',
+                    'estado'         => 'free',
+                    'tipo_ambiente'  => 'compartido',
+                    'ambiente_grupo' => 1,
                 ]);
 
                 Eventos::create([
-                    'nombre'      => 'Vóley',
-                    'tipo'        => 'cancha',
-                    'precio'      => 50,
-                    'descripcion' => 'Reserva de cancha de vóley',
-                    'estado'      => 'free',
+                    'nombre'         => 'Vóley',
+                    'tipo'           => 'cancha',
+                    'precio'         => 50,
+                    'descripcion'    => 'Reserva de cancha de vóley',
+                    'estado'         => 'free',
+                    'tipo_ambiente'  => 'compartido',
+                    'ambiente_grupo' => 1,
                 ]);
 
                 Eventos::create([
-                    'nombre'      => 'Evento',
-                    'tipo'        => 'evento',
-                    'precio'      => 0,
-                    'descripcion' => 'Eventos generales con precio variable',
-                    'estado'      => 'free',
+                    'nombre'         => 'Evento',
+                    'tipo'           => 'evento',
+                    'precio'         => 0,
+                    'descripcion'    => 'Eventos generales con precio variable',
+                    'estado'         => 'free',
+                    'tipo_ambiente'  => 'propio',
+                    'ambiente_grupo' => null,
                 ]);
             }
 
-            $typeEvents = Eventos::select('id', 'nombre', 'tipo', 'precio')->get();
+            $typeEvents = Eventos::select('id', 'nombre', 'tipo', 'precio', 'tipo_ambiente', 'ambiente_grupo')->get();
 
             return response()->json($typeEvents);
         } catch (\Throwable $e) {
@@ -281,11 +302,22 @@ class ReservationController extends Controller
 
     public function approvePayment(Reservation $reservation)
     {
+        Reservation::expirePending();
+        $reservation->refresh();
+
+        if ($reservation->payment_status === 'rejected') {
+            return back()->withErrors([
+                'approval' => 'La reserva pendiente venció y el horario fue liberado.',
+            ]);
+        }
+
+        $eventoIdsForApproval = $this->resolveGrupoIds(Eventos::select('id', 'tipo_ambiente', 'ambiente_grupo')->findOrFail($reservation->id_evento));
+
         $hasConflict = Reservation::query()
             ->where('id', '!=', $reservation->id)
-            ->where('id_evento', $reservation->id_evento)
+            ->whereIn('id_evento', $eventoIdsForApproval)
             ->where('date', $reservation->date)
-            ->where('reservation_status', 'busy')
+            ->blocking()
             ->where('start_time', '<', $reservation->end_time)
             ->where('end_time', '>', $reservation->start_time)
             ->exists();
@@ -300,7 +332,6 @@ class ReservationController extends Controller
             'payment_status' => 'approved',
             'payment_reviewed_at' => now(),
             'reservation_status' => 'busy',
-            'id_user' => auth()->id(),
         ]);
 
         return to_route('reservations.index');
@@ -312,10 +343,20 @@ class ReservationController extends Controller
             'payment_status' => 'rejected',
             'payment_reviewed_at' => now(),
             'reservation_status' => 'free',
-            'id_user' => auth()->id(),
         ]);
 
         return to_route('reservations.index');
+    }
+
+    private function resolveGrupoIds(Eventos $evento): array
+    {
+        if ($evento->tipo_ambiente === 'compartido' && $evento->ambiente_grupo) {
+            return Eventos::where('ambiente_grupo', $evento->ambiente_grupo)
+                ->pluck('id')
+                ->toArray();
+        }
+
+        return [$evento->id];
     }
 
     private function normalizeCustomerName(string $name, ?string $lastname = null): array

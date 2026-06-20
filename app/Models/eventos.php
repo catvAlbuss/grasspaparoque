@@ -12,5 +12,11 @@ class Eventos extends Model
         'precio',
         'descripcion',
         'estado',
+        'tipo_ambiente',
+        'ambiente_grupo',
+    ];
+
+    protected $casts = [
+        'ambiente_grupo' => 'integer',
     ];
 }

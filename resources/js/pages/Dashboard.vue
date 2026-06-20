@@ -196,7 +196,7 @@ const estadoStyle = {
       </div>
 
       <!-- ===== ACCESOS RÁPIDOS ===== -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
         <Link href="/users" :class="cn(
           'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
           'text-center hover:bg-zinc-800 transition-all duration-200',
@@ -206,13 +206,22 @@ const estadoStyle = {
           <span class="text-xs font-medium text-gray-300">Usuarios</span>
         </Link>
 
-        <Link href="/events" :class="cn(
+        <Link href="/eventos" :class="cn(
           'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
           'text-center hover:bg-zinc-800 transition-all duration-200',
           'hover:border-zinc-700 group'
         )">
           <Calendar class="w-6 h-6 mx-auto mb-1 text-green-400 group-hover:scale-110 transition-transform" />
           <span class="text-xs font-medium text-gray-300">Eventos</span>
+        </Link>
+
+        <Link href="/calendar" :class="cn(
+          'bg-zinc-900 border border-zinc-800 rounded-xl p-3',
+          'text-center hover:bg-zinc-800 transition-all duration-200',
+          'hover:border-zinc-700 group'
+        )">
+          <Calendar class="w-6 h-6 mx-auto mb-1 text-green-400 group-hover:scale-110 transition-transform" />
+          <span class="text-xs font-medium text-gray-300">Calendario</span>
         </Link>
 
         <Link href="/products" :class="cn(

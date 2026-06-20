@@ -56,7 +56,7 @@ onMounted(async () => {
         if (Array.isArray(data)) {
             const eventos = data.map((r) => ({
                 id: r.id.toString(),
-                title: '🔴 OCUPADO',
+                title: r.event_nombre ? `🔴 ${r.event_nombre}` : '🔴 OCUPADO',
                 start: toZoned(r.date, r.start_time),
                 end: toZoned(r.date, r.end_time),
             }))

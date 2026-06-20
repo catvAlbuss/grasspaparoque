@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Reservation extends Model
 {
+    public const PENDING_TIMEOUT_MINUTES = 10;
+
     protected $fillable = [
         'id_evento',
-        'id_user',
         'id_pay',
         'id_customer',
         'start_time',
@@ -26,11 +28,6 @@ class Reservation extends Model
         return $this->belongsTo(Eventos::class, 'id_evento');
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'id_user');
-    }
-    
     public function pay()
     {
         return $this->belongsTo(Pay::class, 'id_pay');
@@ -47,11 +44,6 @@ class Reservation extends Model
         return $this->evento();
     }
 
-    public function users()
-    {
-        return $this->user();
-    }
-
     public function pays()
     {
         return $this->pay();
@@ -60,5 +52,28 @@ class Reservation extends Model
     public function customers()
     {
         return $this->customer();
+    }
+
+    public function scopeBlocking(Builder $query): Builder
+    {
+        return $query->where(function (Builder $query) {
+            $query->where('reservation_status', 'busy')
+                ->orWhere(function (Builder $query) {
+                    $query->where('payment_status', 'pending')
+                        ->where('created_at', '>', now()->subMinutes(self::PENDING_TIMEOUT_MINUTES));
+                });
+        });
+    }
+
+    public static function expirePending(): int
+    {
+        return static::query()
+            ->where('payment_status', 'pending')
+            ->where('created_at', '<=', now()->subMinutes(self::PENDING_TIMEOUT_MINUTES))
+            ->update([
+                'payment_status' => 'rejected',
+                'reservation_status' => 'free',
+                'payment_reviewed_at' => now(),
+            ]);
     }
 }

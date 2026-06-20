@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, ReceiptText, Users2 } from 'lucide-vue-next';
+import { BookOpen, CalendarDays, Folder, LayoutGrid, ReceiptText, Users2 } from 'lucide-vue-next';
 import { computed } from 'vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -32,41 +32,41 @@ const canManageReservations = computed(() => {
 
 const mainNavItems = computed<NavItem[]>(() => {
     const baseItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Usuarios',
-        href: users.index.url(),
-        icon: Users2,
-    },
-    {
-        title: 'reservations',
-        href: reservations.index.url(),
-        icon: Users2,
-    },
-    {
-        title: 'reservations',
-        href: reservations.index.url(),
-        icon: Users2,
-    },
-   {
-    title: 'eventos',
-    href: eventos.index.url(),
-    icon: CalendarCheck,
-},
-    {
-        title: 'productos',
-        href: products.index.url(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'caja',
-        href: box.index.url(),
-        icon: LayoutGrid,
-    },
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+        {
+            title: 'Usuarios',
+            href: users.index.url(),
+            icon: Users2,
+        },
+        {
+            title: 'reservations',
+            href: reservations.index.url(),
+            icon: Users2,
+        },
+        {
+            title: 'Calendario',
+            href: '/calendar',
+            icon: CalendarDays,
+        },
+        {
+            title: 'eventos',
+            href: eventos.index.url(),
+            icon: CalendarCheck,
+        },
+        {
+            title: 'productos',
+            href: products.index.url(),
+            icon: LayoutGrid,
+        },
+        {
+            title: 'caja',
+            href: box.index.url(),
+            icon: LayoutGrid,
+        },
     ];
 
 
@@ -80,19 +80,6 @@ const mainNavItems = computed<NavItem[]>(() => {
 
     return baseItems;
 });
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
-];
 </script>
 
 <template>
@@ -114,10 +101,8 @@ const footerNavItems: NavItem[] = [
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
             <NavUser />
         </SidebarFooter>
     </Sidebar>
     <slot />
 </template>
-
