@@ -98,11 +98,11 @@ const resetForm = (): void => {
 const startEdit = (events: eventos): void => {
     editingId.value = events.id;
     form.clearErrors();
-    form.nombre         = events.nombre;
-    form.precio         = events.precio;
-    form.descripcion    = events.descripcion;
-    form.estado         = events.estado;
-    form.tipo_ambiente  = events.tipo_ambiente ?? 'propio';
+    form.nombre = events.nombre;
+    form.precio = events.precio;
+    form.descripcion = events.descripcion;
+    form.estado = events.estado;
+    form.tipo_ambiente = events.tipo_ambiente ?? 'propio';
     form.ambiente_grupo = events.ambiente_grupo ?? null;
 };
 
@@ -166,7 +166,7 @@ const remove = (events: eventos): void => {
                         </div>
                         <div>
                             <span class="block text-[0.95rem] font-bold leading-none text-white">{{ totalEventos
-                                }}</span>
+                            }}</span>
                             <span class="mt-0.5 block text-[0.68rem]" style="color:rgba(134,239,172,0.65);">Total</span>
                         </div>
                     </div>
@@ -179,7 +179,7 @@ const remove = (events: eventos): void => {
                         </div>
                         <div>
                             <span class="block text-[0.95rem] font-bold leading-none text-white">{{ eventosActivos
-                                }}</span>
+                            }}</span>
                             <span class="mt-0.5 block text-[0.68rem]"
                                 style="color:rgba(134,239,172,0.65);">Activos</span>
                         </div>
@@ -193,7 +193,7 @@ const remove = (events: eventos): void => {
                         </div>
                         <div>
                             <span class="block text-[0.95rem] font-bold leading-none text-white">${{ precioPromedio
-                                }}</span>
+                            }}</span>
                             <span class="mt-0.5 block text-[0.68rem]" style="color:rgba(134,239,172,0.65);">Precio
                                 prom.</span>
                         </div>
@@ -239,7 +239,8 @@ const remove = (events: eventos): void => {
                             {{ isEditing ? 'Editar Evento' : 'Nuevo Evento' }}
                         </h2>
                         <p class="mt-0.5 text-[0.76rem] text-muted-foreground">
-                            {{ isEditing ? 'Modifica los datos del evento seleccionado' : 'Completa los campos para registrar un nuevo evento' }}
+                            {{ isEditing ? 'Modifica los datos del evento seleccionado' 
+                            : 'Completa los campos para registrar un nuevo evento' }}
                         </p>
                     </div>
                 </div>
@@ -294,30 +295,26 @@ const remove = (events: eventos): void => {
                             <ToggleLeft :size="12" class="text-green-500" />
                             Estado
                         </Label>
-                        <select
-                            v-model="form.estado"
-                            required
+                        <select v-model="form.estado" required
                             class="h-10 rounded-[9px] border-[1.5px] border-green-500/30 bg-background px-3 text-[0.845rem] text-foreground outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20"
-                            style="color-scheme: light dark;"
-                        >
+                            style="color-scheme: light dark;">
                             <option value="free">Disponible</option>
                             <option value="busy">Ocupado</option>
                         </select>
-                        <p class="mt-0.5 text-[0.68rem] text-muted-foreground/70">Define si el evento está disponible para nuevas reservas.</p>
+                        <p class="mt-0.5 text-[0.68rem] text-muted-foreground/70">Define si el evento está disponible
+                            para nuevas reservas.</p>
                         <InputError :message="form.errors.estado" />
                     </div>
 
                     <!-- Tipo de Ambiente -->
                     <div class="flex flex-col gap-1.5">
-                        <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
+                        <Label
+                            class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <Link2 :size="12" class="text-green-500" />
                             Tipo de Ambiente
                         </Label>
-                        <select
-                            v-model="form.tipo_ambiente"
-                            required
-                            class="rounded-[9px] border-[1.5px] border-green-500/30 bg-zinc-800/50 px-3 py-2 text-[0.845rem] text-foreground outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20"
-                        >
+                        <select v-model="form.tipo_ambiente" required
+                            class="rounded-[9px] border-[1.5px] border-green-500/30 bg-zinc-800/50 px-3 py-2 text-[0.845rem] text-foreground outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20">
                             <option value="propio">Ambiente propio (espacio dedicado)</option>
                             <option value="compartido">Ambiente compartido (comparte espacio con otros eventos)</option>
                         </select>
@@ -330,21 +327,17 @@ const remove = (events: eventos): void => {
 
                     <!-- Grupo de Ambiente (solo si compartido) -->
                     <div v-if="form.tipo_ambiente === 'compartido'" class="flex flex-col gap-1.5">
-                        <Label class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
+                        <Label
+                            class="flex items-center gap-1.5 text-[0.76rem] font-semibold tracking-[0.01em] text-foreground">
                             <Layers2 :size="12" class="text-green-500" />
                             Número de Grupo
                         </Label>
-                        <input
-                            v-model.number="form.ambiente_grupo"
-                            type="number"
-                            min="1"
-                            max="255"
-                            required
+                        <input v-model.number="form.ambiente_grupo" type="number" min="1" max="255" required
                             placeholder="Ej: 1 (todos los eventos con el mismo número comparten espacio)"
-                            class="w-full rounded-[9px] border-[1.5px] border-green-500/30 bg-zinc-800/50 px-3 py-2 text-[0.845rem] text-foreground placeholder:text-muted-foreground/55 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20"
-                        />
+                            class="w-full rounded-[9px] border-[1.5px] border-green-500/30 bg-zinc-800/50 px-3 py-2 text-[0.845rem] text-foreground placeholder:text-muted-foreground/55 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20" />
                         <p class="mt-0.5 text-[0.68rem] text-muted-foreground/70">
-                            Asigna el mismo número a todos los eventos que comparten el mismo espacio físico. Ej: Fútbol y Vóley en la misma cancha → Grupo 1.
+                            Asigna el mismo número a todos los eventos que comparten el mismo espacio físico. Ej: Fútbol
+                            y Vóley en la misma cancha → Grupo 1.
                         </p>
                         <InputError :message="form.errors.ambiente_grupo" />
                     </div>
@@ -388,7 +381,7 @@ const remove = (events: eventos): void => {
                             style="letter-spacing:-0.02em;">Listado de Eventos</h2>
                         <p class="mt-0.5 text-[0.76rem] text-muted-foreground">
                             {{ totalEventos }} evento{{ totalEventos !== 1 ? 's' : '' }} registrado{{ totalEventos !== 1
-                            ? 's' : '' }} · {{ eventosActivos }} activo{{ eventosActivos !== 1 ? 's' : '' }}
+                                ? 's' : '' }} · {{ eventosActivos }} activo{{ eventosActivos !== 1 ? 's' : '' }}
                         </p>
                     </div>
                 </div>

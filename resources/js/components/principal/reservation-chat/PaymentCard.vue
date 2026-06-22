@@ -11,8 +11,7 @@ defineProps<{
 
 <template>
     <section
-        class="rounded-2xl border border-emerald-200 bg-gradient-to-br from-white to-emerald-50 p-4 text-xs text-slate-800 shadow-lg"
-    >
+        class="rounded-2xl border border-emerald-200 bg-gradient-to-br from-white to-emerald-50 p-4 text-xs text-slate-800 shadow-lg">
         <p class="font-semibold tracking-wide text-emerald-700 uppercase">
             Datos del adelanto
         </p>
@@ -30,11 +29,7 @@ defineProps<{
             <dt class="text-slate-500">Tiempo restante</dt>
             <dd class="text-right font-semibold">{{ countdown }}</dd>
         </dl>
-        <img
-            v-if="qrUrl"
-            :src="qrUrl"
-            alt="Código QR de Yape"
-            class="mt-3 h-36 w-full rounded-xl border border-emerald-200 bg-white object-contain p-2"
-        />
+        <img v-if="qrUrl" :src="qrUrl" alt="Código QR de Yape"
+            class="mt-3 h-36 w-full rounded-xl border border-emerald-200 bg-white object-contain p-2" />
     </section>
 </template>
