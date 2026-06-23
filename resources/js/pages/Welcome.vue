@@ -13,7 +13,7 @@ import ChatbotReservas from '@/components/principal/chatbot-reservas.vue';
 </script>
 
 <template>
-    
+
     <Navbar />
     <Info />
     <section id="calendar"><Calendar /></section>

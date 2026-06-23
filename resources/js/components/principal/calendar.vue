@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 // npm install @schedule-x/vue @schedule-x/calendar @schedule-x/theme-default temporal-polyfill
 import { ScheduleXCalendar } from '@schedule-x/vue'
 import {
@@ -71,10 +71,10 @@ onMounted(async () => {
 
 <template>
     <section id="Calendario" class="mx-auto w-full px-4 py-6">
-        
+
         <!-- Contenedor principal -->
         <div class="relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-zinc-900 via-zinc-900 to-emerald-900/20 p-1 shadow-xl shadow-emerald-500/10">
-            
+
             <!-- Glow efectos -->
             <div class="pointer-events-none absolute -top-20 -right-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl"></div>
             <div class="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-green-500/10 blur-3xl"></div>
@@ -102,9 +102,9 @@ onMounted(async () => {
 
             <!-- Contenedor del Calendario -->
             <div class="relative z-10 rounded-b-xl bg-zinc-900/50 px-8 py-6 backdrop-blur-sm">
-                <div class="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900" 
+                <div class="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900"
                      style="height: 470px;">
-                    <ScheduleXCalendar :calendar-app="calendarApp" 
+                    <ScheduleXCalendar :calendar-app="calendarApp"
                                        class="h-full w-full" />
                 </div>
             </div>
