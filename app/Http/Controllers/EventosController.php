@@ -27,17 +27,21 @@ class EventosController extends Controller
     public function store(Request $request)
     {
         $validate = $request->validate([
-            'nombre' => ['required', 'string', 'max:250'],
-            'precio' => ['required', 'numeric', 'min:0'],
-            'descripcion' => ['nullable', 'string', 'max:1000'],
-            'estado' => ['required', 'integer', 'min:0'],
+            'nombre'         => ['required', 'string', 'max:250'],
+            'precio'         => ['required', 'numeric', 'min:0'],
+            'descripcion'    => ['nullable', 'string', 'max:1000'],
+            'estado'         => ['required', 'in:free,busy'],
+            'tipo_ambiente'  => ['required', 'in:compartido,propio'],
+            'ambiente_grupo' => ['nullable', 'integer', 'min:1', 'max:255', 'required_if:tipo_ambiente,compartido'],
         ]);
 
         eventos::create([
-            'nombre' => $validate['nombre'],
-            'precio' => $validate['precio'],
-            'descripcion' => $validate['descripcion'] ?? '',
-            'estado' => $validate['estado'],
+            'nombre'         => $validate['nombre'],
+            'precio'         => $validate['precio'],
+            'descripcion'    => $validate['descripcion'] ?? '',
+            'estado'         => $validate['estado'],
+            'tipo_ambiente'  => $validate['tipo_ambiente'],
+            'ambiente_grupo' => $validate['tipo_ambiente'] === 'compartido' ? ($validate['ambiente_grupo'] ?? null) : null,
         ]);
 
         return to_route('eventos.index');
@@ -51,17 +55,21 @@ class EventosController extends Controller
         $events = eventos::findOrFail($eventosId);
 
         $validate = $request->validate([
-            'nombre' => ['required', 'string', 'max:250'],
-            'precio' => ['required', 'numeric', 'min:0'],
-            'descripcion' => ['required', 'string', 'max:1000'],
-            'estado' => ['required', 'integer', 'min:0'],
+            'nombre'         => ['required', 'string', 'max:250'],
+            'precio'         => ['required', 'numeric', 'min:0'],
+            'descripcion'    => ['required', 'string', 'max:1000'],
+            'estado'         => ['required', 'in:free,busy'],
+            'tipo_ambiente'  => ['required', 'in:compartido,propio'],
+            'ambiente_grupo' => ['nullable', 'integer', 'min:1', 'max:255', 'required_if:tipo_ambiente,compartido'],
         ]);
 
         $events->update([
-            'nombre' => $validate['nombre'],
-            'precio' => $validate['precio'],
-            'descripcion' => $validate['descripcion'],
-            'estado' => $validate['estado'],
+            'nombre'         => $validate['nombre'],
+            'precio'         => $validate['precio'],
+            'descripcion'    => $validate['descripcion'],
+            'estado'         => $validate['estado'],
+            'tipo_ambiente'  => $validate['tipo_ambiente'],
+            'ambiente_grupo' => $validate['tipo_ambiente'] === 'compartido' ? ($validate['ambiente_grupo'] ?? null) : null,
         ]);
 
         return to_route('eventos.index');

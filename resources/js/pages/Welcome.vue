@@ -20,7 +20,6 @@ import ChatbotReservas from '@/components/principal/chatbot-reservas.vue';
     <section id="services"><Services1 /></section>
     <Carrusel />
     <section id="contact"><Form1 /></section>
-    <!-- chatbot fijo en esquina inferior -->
     <ChatbotReservas />
 
 </template>

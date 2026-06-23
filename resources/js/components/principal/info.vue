@@ -81,11 +81,10 @@ onUnmounted(() => {
             <div v-for="slide in slides" :key="slide.id" class="relative w-full flex-shrink-0">
                 <div class="absolute inset-0">
                     <img :src="slide.image" :alt="slide.title" class="h-full w-full object-cover" />
-                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-900/55 to-slate-900/20"></div>
                 </div>
 
                 <div class="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col justify-center overflow-hidden px-4 pb-24 pt-28 text-white sm:px-6 sm:pb-20 sm:pt-32">
-                    <div class="w-full max-w-2xl">
+                    <div class="w-full max-w-2xl rounded-2xl bg-black/25 p-5 shadow-xl backdrop-blur-[2px] sm:p-7">
                         <p class="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300">Grass</p>
                         <h1 class="mt-4 break-words text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">
                             {{ slide.title }}

@@ -53,31 +53,23 @@ const getImageStyle = (index) => {
 
     // Escala y opacidad
     let scale = 1
-    let opacity = 1
-    let brightness = 1
+    const opacity = 1
     let zIndex = 50
 
     if (isFront) {
         scale = 1.2
-        brightness = 1.1
-        opacity = 1
         zIndex = 100
     } else if (isBack) {
         scale = 0.7
-        opacity = 0.4
-        brightness = 0.5
         zIndex = 10
     } else {
         scale = 0.9
-        opacity = 0.8
-        brightness = 0.8
         zIndex = 50
     }
 
     return {
         transform: `translateX(-50%) translateY(-50%) translateZ(${z}px) rotateY(${angle}deg) scale(${scale})`,
         opacity,
-        filter: `brightness(${brightness})`,
         zIndex,
         left: '50%',
         top: '50%',
@@ -133,9 +125,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <section class="w-full bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 overflow-hidden" style="min-height: 100vh;">
+    <section class="relative isolate w-full overflow-hidden bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900" style="min-height: 100vh;">
         <!-- Efectos de fondo -->
-        <div class="absolute inset-0 overflow-hidden">
+        <div class="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <div class="absolute -top-40 -right-40 w-80 h-80 bg-green-900/20 rounded-full blur-3xl"></div>
             <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-900/20 rounded-full blur-3xl"></div>
         </div>
@@ -166,11 +158,8 @@ onUnmounted(() => {
 
                             <img :src="image.src"
                                  :alt="image.title"
-                                 class="w-[500px] h-[280px] object-cover transition-transform duration-700 group-hover:scale-110 brightness-100 group-hover:brightness-110">
-
-                            <!-- Overlay -->
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-
+                                 class="w-[600px] h-[300px] object-cover transition-transform duration-700 group-hover:scale-110">
+                            
                             <!-- Número -->
                             <div class="absolute top-4 left-4">
                                 <span class="text-5xl font-black text-green-500/30 group-hover:text-green-500/50 transition-all">
@@ -220,13 +209,13 @@ onUnmounted(() => {
                  :key="image.id"
                  @click="rotation = (index * 90) % 360"
                  class="relative group/thumb cursor-pointer transition-all duration-300"
-                 :class="index * 90 === rotation % 360 ? 'scale-110 z-10' : 'opacity-50 hover:opacity-100'">
-
+                 :class="index * 90 === rotation % 360 ? 'scale-110 z-10' : 'hover:scale-105'">
+                
                 <div class="w-14 h-10 rounded-md overflow-hidden border-2"
                      :class="index * 90 === rotation % 360 ? 'border-green-500 shadow-md shadow-green-500/30' : 'border-transparent'">
                     <img :src="image.src"
                          :alt="image.title"
-                         class="w-full h-full object-cover brightness-75">
+                         class="w-full h-full object-cover">
                 </div>
 
                 <!-- Tooltip -->
